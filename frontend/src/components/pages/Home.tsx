@@ -8,18 +8,25 @@ import promo_1 from "../../../public/promo-1.png";
 import GallerySection from "../ui/gallery";
 import { useScroll, useTransform } from "framer-motion";
 import promo_2 from "../../../public/promo-2.png";
+import promo_3 from "../../../public/promo-3.jpeg";
 const ScrollImageSequence = lazy(() => import("../ui/AnimatedCanvas"));
 function Home() {
   const lines = ["Built for Warriors.", "Forged in Fire."];
   const section1Ref = useRef<HTMLElement>(null);
-
+  const section2Ref = useRef<HTMLElement>(null);
   const { scrollYProgress } = useScroll({
     target: section1Ref,
     offset: ["start end", "end start"],
   });
 
-  const scale2 = useTransform(scrollYProgress, [0, 0.3], [0.9, 1]);
-  // const scale1 = useTransform(scrollYProgress, [0, .3], [0.75, 1]);
+    const { scrollYProgress: scrollYProgress2 } = useScroll({
+    target: section2Ref,
+    offset: ["start end", "end start"],
+  });
+
+
+  const scale2 = useTransform(scrollYProgress, [0, 0.5], [0.9, 1]);
+  const scale1 = useTransform(scrollYProgress2, [0, 0.3], [0.9, 1]);
 
   return (
     <div>
@@ -186,10 +193,95 @@ function Home() {
         <div className="w-full h-[50vh]"></div>
       </motion.section>
 
+
+      <motion.section
+        ref={section2Ref}
+        style={{ scale: scale1 }}
+        className="w-full ease duration-100 relative  -mt-[50vh] flex flex-col items-center shadow-black  justify-center bg-[#171717] rounded-t-[3.5rem] overflow-hidden py-20"
+      >
+        {/* Paper texture overlay */}
+        <img
+          src={paperTex}
+          alt="Paper texture overlay"
+          className="absolute inset-0 w-full ease-in h-full object-cover opacity-50 mix-blend-overlay pointer-events-none"
+        />
+
+ <span className="absolute w-[40%] h-[190%] bg-[#ffd8d852] blur-[200px] rotate-[-45deg] top-[-140px] right-130 z-0"></span>
+
+        {/* Inner content  */}
+        <div className="max-w-6xl w-full px-6 flex flex-col items-center gap-16">
+          <motion.div
+            className="flex flex-col items-center lg:items-start text-center"
+            initial={{ opacity: 0, y: 50 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            transition={{ duration: 1 }}
+          >
+            <h2 className="text-4xl md:text-6xl font-extrabold text-white text-center russo tracking-tight relative">
+              Analyize {" "}
+              <span className="  bg-gradient-to-r animate-text drop-shadow-2xl animate-text">
+                your punches
+              </span>{" "}
+              with AI
+            </h2>
+          </motion.div>
+
+          <motion.div
+            // style={{ scale: scale2 }}
+            className="w-full flex justify-center items-center"
+          >
+            <div className="w-[100%] p-3 sticky top-10 rounded-3xl overflow-hidden bg-gradient-to-b from-[#ffffff00] to-black/50 backdrop-blur-2xl border border-white/50 shadow-2xl cursor-pointer">
+              <picture>
+                {/* For md and above */}
+                <source media="(min-width: 768px)" srcSet={promo_3} />
+
+                {/* For sm (below md) */}
+                <source media="(max-width: 767px)" srcSet={promo_3} />
+
+                {/* Fallback (just in case) */}
+                <img
+                  className="rounded-2xl border border-black/50 w-full grayscale-100"
+                  src={promo_3}
+                  alt="Boxing Training"
+                />
+              </picture>
+
+              <motion.div
+                className="absolute inset-0 pointer-events-none bg-gradient-to-tr from-white/10 to-white/0"
+                animate={{ opacity: [0, 0.15, 0] }}
+                transition={{ repeat: Infinity, duration: 4 }}
+              />
+            </div>
+          </motion.div>
+
+          <span className="flex w-full justify-center gap-4 z-10">
+            <Link to="/learn">
+              <button className="px-8 py-5 border-t-2 h-15 flex items-center justify-center bg-gradient-to-r from-[#fd5353] to-red-600 hover:to-red-500 text-white rounded-sm font-semibold transition-all shadow-lg hover:shadow-xl">
+                Learn to box
+              </button>
+            </Link>
+
+            <a
+              href="https://www.youtube.com/channel/UCiE7yqBDTQjtk1abuw92FQg"
+              target="_blank"
+              rel="noreferrer"
+            >
+              <button className="flex gap-1 justify-center items-center text-center cursor-pointer border border-black/30 bg-white/60 text-black rounded-sm px-8 py-5 h-15 font-semibold transition-all shadow-lg hover:shadow-xl hover:bg-white/10">
+                Atiko's YT <ArrowRight className="w-5 h-5" />
+              </button>
+            </a>
+          </span>
+
+      
+        </div>
+
+        <div className="w-full h-[50vh]"></div>
+      </motion.section>
+
       <section className="relative min-w-full min-h-screen -mt-[50vh] z-20 overflow-visible">
         <GallerySection />
       </section>
-      {/* <div className="w-[100%] h-[10px] blur-xl bg-white" /> */}
+     ``
       
       <section  className="relative h-[200vh] ease-in  w-full ">
         <ScrollImageSequence  />
@@ -232,7 +324,7 @@ function Home() {
                 rel="noopener noreferrer"
                 className="text-red-300 hover:text-red-600 transition"
               >
-                Team Code Blooded
+                Ayush
               </a>
             </p>
           </div>

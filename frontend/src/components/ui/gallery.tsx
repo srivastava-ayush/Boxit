@@ -1,5 +1,13 @@
-import { motion, useScroll, useTransform } from "framer-motion";
+"use client";
+
+import {
+  motion,
+  useScroll,
+  useTransform,
+  useSpring,
+} from "framer-motion";
 import { useRef } from "react";
+
 import effect_img_1 from "../../../public/effect_1.jpeg";
 import effect_img_2 from "../../../public/effect_5.jpeg";
 import effect_img_3 from "../../../public/effect_3.jpeg";
@@ -13,21 +21,100 @@ import paperTex from "../../../public/paper-texture.webp";
 function GallerySection() {
   const galleryRef = useRef<HTMLDivElement>(null);
 
+  /* -------------------------------------------------------
+     1. SCROLL
+  ------------------------------------------------------- */
   const { scrollYProgress } = useScroll({
     target: galleryRef,
     offset: ["start end", "end start"],
   });
-  
+
+  /* -------------------------------------------------------
+     2. LIQUID TEXT ENGINE (TEXT ONLY)
+  ------------------------------------------------------- */
+  const liquidScroll = useSpring(scrollYProgress, {
+    stiffness: 35,
+    damping: 22,
+    mass: 1.6,
+  });
+
+  /* -------------------------------------------------------
+     3. SCENE SCALE (ORIGINAL)
+  ------------------------------------------------------- */
   const scale = useTransform(scrollYProgress, [0, 0.2], [0.9, 1]);
-  const scaleh1 = useTransform(scrollYProgress, [0.1, 0.2, 0.3, 0.4, 0.5, 0.6], [1, 1.5, 1, 1.5, 1, 1.5]);
+  const scaleh1 = useTransform(scrollYProgress, [0, 0.2], [0.9, 1]);
+
+  /* -------------------------------------------------------
+     4. LIQUID TEXT — "TO BE THE"
+  ------------------------------------------------------- */
+  const toBeTheOpacity = useTransform(
+    liquidScroll,
+    [0.15, 0.28, 0.5, 0.62],
+    [0, 1, 1, 0]
+  );
+
+  const toBeTheX = useTransform(
+    liquidScroll,
+    [0.15, 0.28, 0.5, 0.62],
+    ["140%", "0%", "0%", "-140%"]
+  );
+
+  const toBeTheY = useTransform(
+    liquidScroll,
+    [0.15, 0.62],
+    ["10%", "-12%"]
+  );
+
+  const toBeTheScale = useTransform(
+    liquidScroll,
+    [0.15, 0.28, 0.5, 0.62],
+    [0.92, 1.04, 1, 0.94]
+  );
+
+  const toBeTheRotate = useTransform(
+    liquidScroll,
+    [0.15, 0.62],
+    [3, -3]
+  );
+
+  /* -------------------------------------------------------
+     5. LIQUID TEXT — "GREATEST"
+  ------------------------------------------------------- */
+  const greatestOpacity = useTransform(
+    liquidScroll,
+    [0.6, 0.78],
+    [0, 1]
+  );
+
+  const greatestScale = useTransform(
+    liquidScroll,
+    [0.6, 0.85],
+    [1.12, 1]
+  );
+
+  const greatestY = useTransform(
+    liquidScroll,
+    [0.6, 0.85],
+    ["16%", "0%"]
+  );
+
+  const greatestRotate = useTransform(
+    liquidScroll,
+    [0.6, 0.85],
+    [-2, 0]
+  );
+
+  const greatestLetterSpacing = useTransform(
+    liquidScroll,
+    [0.65, 0.95],
+    ["1.2rem", "0rem"]
+  );
+
+  /* -------------------------------------------------------
+     6. ORIGINAL IMAGE ANIMATION (UNCHANGED)
+  ------------------------------------------------------- */
   const baseScale = useTransform(scrollYProgress, [0, 1], [1, 2]);
   const baseX = useTransform(scrollYProgress, [0, 1], [0, -100]);
-
-  // Text animation transforms
-  const toOpacity = useTransform(scrollYProgress, [0.1, 0.2, 0.25, 0.3], [0, 1, 1, 0]);
-  const beOpacity = useTransform(scrollYProgress, [0.3, 0.35, 0.4, 0.45], [0, 1, 1, 0]);
-  const theOpacity = useTransform(scrollYProgress, [0.45, 0.5, 0.55, 0.6], [0, 1, 1, 0]);
-  const greatestOpacity = useTransform(scrollYProgress, [0.6, 0.65, 1], [0, 1, 1]);
 
   const pictures = [
     {
@@ -35,28 +122,28 @@ function GallerySection() {
       offset: 0.6,
       direction: "left",
       classes:
-        "w-[50vw] md:w-[25vw] h-[40vh] top-[1vh] md:top-[-1vh] left-[6vh] md:left-[4vw] shadow-3xl",
+        "w-[50vw] md:w-[25vw] h-[40vh] top-[1vh] md:top-[-1vh] left-[6vh] md:left-[4vw]",
     },
     {
       src: effect_img_2,
       offset: 0.1,
       direction: "right",
       classes:
-        "top-[-30vh] md:top-[-22vh] right-[-12vw] md:right-[-20vw] w-[39vw] md:w-[12vw] h-[15vh] md:h-[30vh]",
+        "top-[-30vh] md:top-[-22vh] right-[-12vw] md:right-[-20vw] w-[39vw] md:w-[12vw] h-[30vh]",
     },
     {
       src: effect_img_3,
       offset: 0.2,
       direction: "left",
       classes:
-        "top-[-30vh] md:top-[-18vh] md:left-[-23vw] left-[-18vw] w-[25vw] md:w-[15vw] h-[15vh] md:h-[30vh]",
+        "top-[-30vh] md:top-[-18vh] left-[-18vw] md:left-[-23vw] w-[25vw] md:w-[15vw] h-[30vh]",
     },
     {
       src: effect_img_4,
       offset: 0.3,
       direction: "right",
       classes:
-        "left-[27.5vw] w-[20vw] h-[25vh] md:left-[38vw]  top-[-4.5vh] md:top-[22vh]",
+        "left-[27.5vw] w-[20vw] h-[25vh] md:left-[38vw] top-[-4.5vh] md:top-[22vh]",
     },
     {
       src: effect_img_5,
@@ -88,55 +175,59 @@ function GallerySection() {
     },
   ];
 
+  /* -------------------------------------------------------
+     7. RENDER
+  ------------------------------------------------------- */
   return (
     <motion.div
-      style={{ scale }}
       ref={galleryRef}
-      className="relative h-[300vh] ease-in  w-full"
+      style={{ scale }}
+      className="relative h-[300vh] w-full"
     >
-      <motion.div 
-      // style={{borderRadius: roundedBorder+"rem"}}
-      className="sticky flex justify-center items-center -top-12 h-[calc(100vh+48px)] border-t  overflow-hidden bg-[#202020] rounded-t-[3rem] ">
+      <motion.div className="sticky -top-12 h-[calc(100vh+48px)] overflow-hidden bg-[#d4d3d3] rounded-t-[3rem] flex items-center justify-center">
+
         <img
           src={paperTex}
-          alt="Paper texture overlay"
           className="absolute inset-0 w-full h-full object-cover opacity-50 mix-blend-overlay pointer-events-none"
         />
 
-        <div className="absolute inset-0 flex items-center justify-center z-[99]">
-          {/* TO */}
-          <motion.h1
-            style={{ opacity: toOpacity, scale: scaleh1 }}
-            className="absolute russo font-extrabold  text-[5rem] md:text-[6rem] text-white mix-blend-difference drop-shadow-[0_0_2px_rgba(0,0,0,0.6)]"
+        {/* TEXT */}
+        <div className="absolute inset-0 flex items-center justify-center z-[99] overflow-hidden">
+          <motion.div
+            style={{
+              opacity: toBeTheOpacity,
+              x: toBeTheX,
+              y: toBeTheY,
+              scale: toBeTheScale,
+              rotate: toBeTheRotate,
+            }}
+            className="absolute flex gap-6 will-change-transform"
           >
-            TO
-          </motion.h1>
+            {["TO", "BE", "THE"].map((word) => (
+              <h1
+                key={word}
+                className="russo font-extrabold text-[5rem] text-white mix-blend-difference"
+              >
+                {word}
+              </h1>
+            ))}
+          </motion.div>
 
-          {/* BE */}
           <motion.h1
-            style={{ opacity: beOpacity, scale: scaleh1  }}
-            className="absolute russo font-extrabold  text-[5rem] md:text-[6rem] text-white mix-blend-difference drop-shadow-[0_0_2px_rgba(0,0,0,0.6)]"
-          >
-            BE
-          </motion.h1>
-
-          {/* THE */}
-          <motion.h1
-            style={{ opacity: theOpacity , scale: scaleh1 }}
-            className="absolute russo font-extrabold text-[5rem] md:text-[6rem] text-white mix-blend-difference drop-shadow-[0_0_2px_rgba(0,0,0,0.6)]"
-          >
-            THE
-          </motion.h1>
-
-          {/* GREATEST */}
-          <motion.h1
-            style={{ opacity: greatestOpacity, scale: scaleh1  }}
-            className="absolute  font-extrabold text-[clamp(2.5rem,8vw,7rem)] text-red-600 tracking-wide drop-shadow-[100px_100px_100px_rgba(0,0,0,100)]"
+            style={{
+              opacity: greatestOpacity,
+              scale: greatestScale,
+              y: greatestY,
+              rotate: greatestRotate,
+              letterSpacing: greatestLetterSpacing,
+            }}
+            className="font-extrabold text-[clamp(3rem,9vw,8rem)] text-red-600 will-change-transform"
           >
             GREATEST
           </motion.h1>
         </div>
 
+        {/* IMAGES (ORIGINAL BEHAVIOR) */}
         {pictures.map(({ src, offset, direction, classes }, index) => {
           const localScale = useTransform(
             baseScale,
@@ -166,13 +257,12 @@ function GallerySection() {
                 y: localY,
                 zIndex: 10 - index,
               }}
-              className="absolute inset-0 flex ease-in-out items-center justify-center"
+              className="absolute inset-0 flex items-center justify-center"
             >
               <div className={`relative ${classes}`}>
                 <img
                   src={src}
-                  alt={`gallery-${index}`}
-                  className="object-cover w-full h-full rounded-3xl shadow-2xl border border-black/20"
+                  className="object-cover w-full h-full rounded-3xl shadow-2xl"
                 />
               </div>
             </motion.div>
