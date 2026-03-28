@@ -231,7 +231,7 @@ export default function Select() {
           </div>
 
           {/* Custom Combo Builder */}
-          <div className="w-full max-w-4xl bg-white/20 backdrop-blur-2xl relative rounded-xl p-6 mb-12">
+          <div className="w-full max-w-4xl bg-white/20 select-none backdrop-blur-2xl relative rounded-xl p-6 mb-12">
            
            <img src={paperTex} alt="Paper texture overlay" className="absolute inset-0 w-full h-full object-cover opacity-30 mix-blend-overlay pointer-events-none rounded-xl" />
          
@@ -242,12 +242,12 @@ export default function Select() {
               ref={dropAreaRef}
               onDragOver={handleDragOver}
               onDrop={handleDrop}
-              className={`w-full min-h-24 bg-black/80 border-2 ${
+              className={`w-full min-h-24 bg-black/80 border-2 select-none  ${
                 isDragging ? "border-red-500 bg-gray-900/50" : "border-gray-700"
               } rounded-lg p-4 mb-6 flex flex-wrap items-center text-center gap-2 transition-colors`}
             >
               {customCombo.length === 0 ? (
-                <div className="w-full text-center text-gray-500 py-4">
+                <div className="w-full text-center text-gray-500 select-none py-4">
                   Drag punches here or click on them below to create your combo
                 </div>
               ) : (
@@ -260,7 +260,7 @@ export default function Select() {
                       className="relative group"
                     >
                       <div
-                        className="flex flex-col items-center justify-center w-16 h-16 rounded-lg text-white font-bold text-lg m-1 cursor-move"
+                        className="flex flex-col items-center select-none  justify-center w-16 h-16 rounded-lg text-white font-bold text-lg m-1 cursor-move"
                         style={{ backgroundColor: getPunchColor(punchId) }}
                       >
                         <div className="text-xl font-bold">{punchId}</div>

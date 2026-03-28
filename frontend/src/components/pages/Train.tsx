@@ -16,7 +16,7 @@ import punchAudioMap from "../../data/punchAudio";
 import parseCombo from "../../utils/parseCombo";
 import paperTex from "../../../public/paper-texture.webp";
 // Constants
-const DETECTION_INTERVAL = 150;
+const DETECTION_INTERVAL = 50;
 const PUNCH_SPEED_THRESHOLD = 25;
 const PUNCH_COOLDOWN = 300;
 const KEYPOINT_CONFIDENCE_THRESHOLD = 0.3;

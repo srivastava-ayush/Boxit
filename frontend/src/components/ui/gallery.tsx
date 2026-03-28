@@ -182,7 +182,7 @@ function GallerySection() {
     <motion.div
       ref={galleryRef}
       style={{ scale }}
-      className="relative h-[300vh] w-full"
+      className="relative h-[800vh] w-full"
     >
       <motion.div className="sticky -top-12 h-[calc(100vh+48px)] overflow-hidden bg-[#d4d3d3] rounded-t-[3rem] flex items-center justify-center">
 

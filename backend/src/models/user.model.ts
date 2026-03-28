@@ -46,7 +46,7 @@ const userSchema = new mongoose.Schema<IUser>({
   achievements: [String],
 });
 
-// 🔒 Hash password
+
 userSchema.pre("save", async function (next) {
   if (!this.isModified("password")) return next();
   const salt = await bcrypt.genSalt(10);
@@ -54,12 +54,11 @@ userSchema.pre("save", async function (next) {
   next();
 });
 
-// ✅ Compare password
+
 userSchema.methods.matchPassword = async function (enteredPassword: string) {
   return await bcrypt.compare(enteredPassword, this.password);
 };
 
-// 🎮 Add XP + level-up
 userSchema.methods.addXP = function (amount: number) {
   this.xp += amount;
 
@@ -70,7 +69,7 @@ userSchema.methods.addXP = function (amount: number) {
   }
 };
 
-// 🔥 Update streak
+
 
 userSchema.methods.updateStreak = function () {
   const now = new Date();
