@@ -19,10 +19,6 @@ const VideoCard = ({
     animate: { 
       y: 0, opacity: 1, filter: "blur(0px)",
       transition: { duration: 0.6, staggerChildren: 0.1 }
-    },
-    hover: {
-      y: -5,
-      transition: { duration: 0.3, ease: "easeOut" }
     }
   }
 
@@ -36,7 +32,10 @@ const VideoCard = ({
       variants={containerVariants}
       initial="initial"
       animate="animate"
-      whileHover="hover"
+      whileHover={{
+      y: -5,
+      transition: { duration: 0.3, ease: "easeOut" }
+    }}
       className="w-full max-w-md rounded-xl overflow-hidden border-2 border-red-500/50 h-full bg-pink-500/10 shadow-xl hover:shadow-2xl hover:shadow-white/10 transition-all duration-300"
     >
        <img
