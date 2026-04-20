@@ -28,14 +28,10 @@ export default function ProfilePage() {
   };
 
   const initials = user?.username?.slice(0, 2).toUpperCase() ?? "??";
-  useEffect(() => {
-    if(useAuthStore.getState().user === null) {
-      window.location.href = "/login";
-    }
-  })
-
+ 
+ 
   return (
-    <div className="min-h-screen bg-neutral-100 dark:bg-neutral-950 flex flex-col items-center px-4 py-28 transition-colors duration-200">
+    <div className="min-h-screen bg-neutral-100 dark:bg-neutral-950 flex flex-col items-center px-4 py-8 transition-colors duration-200">
 
       {/* Top bar */}
       <div className="w-full max-w-lg flex justify-between items-center mb-6">
