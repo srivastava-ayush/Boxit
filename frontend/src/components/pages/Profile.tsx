@@ -1,11 +1,21 @@
+import { useState, useEffect } from "react";
 import { motion } from "framer-motion";
 import { useAuthStore } from "../../stores/authStore";
-import { Link } from "react-router"; 
+import { Link } from "react-router";
 import { logoutUser } from "../../services/auth";
-import { Home, LogOut, KeyRound } from "lucide-react";
+import { Home, LogOut, KeyRound, Zap, BookOpen, ChevronRight, Sun, Moon } from "lucide-react";
 
 export default function ProfilePage() {
   const user = useAuthStore((state) => state.user);
+  const [dark, setDark] = useState(() => {
+    return localStorage.getItem("theme") === "dark" ||
+      (!localStorage.getItem("theme") && window.matchMedia("(prefers-color-scheme: dark)").matches);
+  });
+
+  useEffect(() => {
+    document.documentElement.classList.toggle("dark", dark);
+    localStorage.setItem("theme", dark ? "dark" : "light");
+  }, [dark]);
 
   const handleLogout = async () => {
     try {
@@ -17,92 +27,102 @@ export default function ProfilePage() {
     }
   };
 
+  const initials = user?.username?.slice(0, 2).toUpperCase() ?? "??";
+  useEffect(() => {
+    if(useAuthStore.getState().user === null) {
+      window.location.href = "/login";
+    }
+  })
+
   return (
-    <div className="min-h-screen bg-tyson-signup flex items-center justify-center bg-gradient-to-b from-[#3a0000b8] to-[#000433] text-white p-4 sm:p-6">
-      <motion.div
-        initial={{ opacity: 0, y: 30 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.7 }}
-        className="w-full max-w-3xl"
-      >
-        <div className="bg-[#000000f1] shadow-lg rounded-2xl border border-gray-700 p-4 sm:p-6 flex flex-col gap-6">
-          {/* Card Header with Home + Logout */}
-          <div className="flex justify-between items-center">
-            <Link
-              to="/"
-              className="flex items-center gap-2 text-sm sm:text-base text-white border px-3 py-2 sm:px-4 sm:py-2 rounded-lg font-semibold hover:bg-white/20 transition"
-            >
-              <Home size={18} /> <span className="hidden sm:inline">Home</span>
-            </Link>
-            <button
-              onClick={handleLogout}
-              className="flex items-center gap-2 text-sm sm:text-base text-white border px-3 py-2 sm:px-4 sm:py-2 rounded-lg font-semibold hover:bg-red-500/30 transition"
-            >
-              <LogOut size={18} /> <span className="hidden sm:inline">Logout</span>
-            </button>
-          </div>
+    <div className="min-h-screen bg-neutral-100 dark:bg-neutral-950 flex flex-col items-center px-4 py-28 transition-colors duration-200">
 
-          {/* User Info */}
-          <motion.div
-            initial={{ scale: 0.9, opacity: 0 }}
-            animate={{ scale: 1, opacity: 1 }}
-            transition={{ delay: 0.2 }}
-            className="text-center space-y-2"
-          >
-            <h2 className="text-2xl sm:text-3xl font-bold">{user?.username}</h2>
-            <p className="text-gray-400 text-sm sm:text-lg">{user?.email}</p>
-          </motion.div>
-
-          {/* Stats Grid */}
-          <motion.div
-            initial={{ opacity: 0, x: -40 }}
-            animate={{ opacity: 1, x: 0 }}
-            transition={{ delay: 0.4 }}
-            className="grid grid-cols-2 sm:grid-cols-4 gap-4 text-center"
-          >
-            <div className="bg-white/5 rounded-xl p-3 sm:p-4">
-              <p className="text-sm sm:text-base font-semibold">Level</p>
-              <p className="text-lg sm:text-xl">{user?.level} 🎚️</p>
-            </div>
-            <div className="bg-white/5 rounded-xl p-3 sm:p-4">
-              <p className="text-sm sm:text-base font-semibold">XP</p>
-              <p className="text-lg sm:text-xl">{user?.xp} ⚡</p>
-            </div>
-            <div className="bg-white/5 rounded-xl p-3 sm:p-4">
-              <p className="text-sm sm:text-base font-semibold">Streak</p>
-              <p className="text-lg sm:text-xl">{user?.streak} 🔥</p>
-            </div>
-            <div className="bg-white/5 rounded-xl p-3 sm:p-4">
-              <p className="text-sm sm:text-base font-semibold">Achievements</p>
-              <p className="text-lg sm:text-xl">{user?.achievements} ⭐</p>
-            </div>
-          </motion.div>
-
-          {/* Reset Password Button */}
-          <button className="flex items-center justify-center gap-2 w-full py-4 sm:py-6 text-base sm:text-lg font-semibold rounded-2xl border-2 hover:bg-white/10 transition">
-            <KeyRound size={18} /> Reset Password
+      {/* Top bar */}
+      <div className="w-full max-w-lg flex justify-between items-center mb-6">
+        <Link to="/">
+          <button className="flex items-center gap-2 text-sm text-neutral-500 dark:text-neutral-400 bg-white dark:bg-neutral-900 border border-neutral-200 dark:border-neutral-800 rounded-lg px-3 py-2 hover:border-neutral-400 dark:hover:border-neutral-600 hover:text-neutral-900 dark:hover:text-neutral-100 transition-all">
+            <Home size={14} /> Home
           </button>
+        </Link>
 
-          {/* CTA Buttons */}
-          <motion.div
-            initial={{ y: 30, opacity: 0 }}
-            animate={{ y: 0, opacity: 1 }}
-            transition={{ delay: 0.6 }}
-            className="flex flex-col sm:flex-row gap-4"
-          >
-            <Link to="/select" className="w-full">
-              <button className="w-full py-4 sm:py-6 text-base sm:text-lg font-semibold rounded-2xl border-2 hover:bg-white/10 transition">
-                🚀 Start Training
-              </button>
-            </Link>
+        {/* Theme toggle */}
+        <button
+          onClick={() => setDark(!dark)}
+          className="flex items-center gap-2 text-sm text-neutral-500 dark:text-neutral-400 bg-white dark:bg-neutral-900 border border-neutral-200 dark:border-neutral-800 rounded-lg px-3 py-2 hover:border-neutral-400 dark:hover:border-neutral-600 transition-all"
+        >
+          {dark ? <Sun size={14} /> : <Moon size={14} />}
+          <span>{dark ? "Light" : "Dark"}</span>
+        </button>
 
-            <Link to="/learn" className="w-full">
-              <button className="w-full py-4 sm:py-6 text-base sm:text-lg font-semibold rounded-2xl border-2 hover:bg-white/10 transition">
-                📚 Go to Learning
-              </button>
-            </Link>
-          </motion.div>
+        <button
+          onClick={handleLogout}
+          className="flex items-center gap-2 text-sm text-neutral-500 dark:text-neutral-400 bg-white dark:bg-neutral-900 border border-neutral-200 dark:border-neutral-800 rounded-lg px-3 py-2 hover:border-red-300 hover:text-red-500 transition-all"
+        >
+          <LogOut size={14} /> Logout
+        </button>
+      </div>
+
+      {/* Card */}
+      <motion.div
+        initial={{ opacity: 0, y: 16 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.35 }}
+        className="w-full max-w-lg bg-white dark:bg-neutral-900 border border-neutral-200 dark:border-neutral-800 rounded-2xl overflow-hidden transition-colors duration-200"
+      >
+        {/* Avatar */}
+        <div className="flex flex-col items-center py-7 px-6 border-b border-neutral-100 dark:border-neutral-800">
+          <div className="w-[72px] h-[72px] rounded-full bg-blue-50 dark:bg-blue-950 flex items-center justify-center text-blue-600 dark:text-blue-300 text-2xl font-medium border border-neutral-200 dark:border-neutral-700 mb-3">
+            {initials}
+          </div>
+          <p className="text-[17px] font-medium text-neutral-900 dark:text-neutral-100">{user?.username}</p>
+          <p className="text-sm text-neutral-400 mt-1">{user?.email}</p>
         </div>
+
+        {/* Stats */}
+        <div className="grid grid-cols-4 divide-x divide-neutral-100 dark:divide-neutral-800 border-b border-neutral-100 dark:border-neutral-800">
+          {[
+            { label: "Level",  value: user?.level,        icon: "🎚️" },
+            { label: "XP",     value: user?.xp,           icon: "⚡" },
+            { label: "Streak", value: user?.streak,       icon: "🔥" },
+            { label: "Awards", value: user?.achievements, icon: "⭐" },
+          ].map(({ label, value, icon }) => (
+            <div key={label} className="flex flex-col items-center py-4 px-1">
+              <span className="text-sm mb-0.5">{icon}</span>
+              <span className="text-[17px] font-medium text-neutral-900 dark:text-neutral-100 leading-none mb-1">{value}</span>
+              <span className="text-[10px] uppercase tracking-widest text-neutral-400">{label}</span>
+            </div>
+          ))}
+        </div>
+
+        {/* Action rows */}
+        {[
+          { to: "/select", icon: <Zap size={14} />, iconClass: "bg-blue-50 dark:bg-blue-950 text-blue-500 dark:text-blue-400", label: "Start training", sub: "Pick a session" },
+          { to: "/learn",  icon: <BookOpen size={14} />, iconClass: "bg-purple-50 dark:bg-purple-950 text-purple-500 dark:text-purple-400", label: "Go to learning", sub: "Continue where you left off" },
+        ].map(({ to, icon, iconClass, label, sub }) => (
+          <Link key={to} to={to} className="flex items-center justify-between px-5 py-[14px] border-b border-neutral-100 dark:border-neutral-800 hover:bg-neutral-50 dark:hover:bg-neutral-800 transition-colors">
+            <div className="flex items-center gap-3">
+              <div className={`w-[30px] h-[30px] rounded-lg flex items-center justify-center ${iconClass}`}>{icon}</div>
+              <div>
+                <p className="text-sm text-neutral-900 dark:text-neutral-100">{label}</p>
+                <p className="text-xs text-neutral-400 mt-0.5">{sub}</p>
+              </div>
+            </div>
+            <ChevronRight size={15} className="text-neutral-300 dark:text-neutral-600" />
+          </Link>
+        ))}
+
+        <button className="w-full flex items-center justify-between px-5 py-[14px] hover:bg-neutral-50 dark:hover:bg-neutral-800 transition-colors">
+          <div className="flex items-center gap-3">
+            <div className="w-[30px] h-[30px] rounded-lg flex items-center justify-center bg-amber-50 dark:bg-amber-950 text-amber-500 dark:text-amber-400">
+              <KeyRound size={14} />
+            </div>
+            <div className="text-left">
+              <p className="text-sm text-neutral-900 dark:text-neutral-100">Reset password</p>
+              <p className="text-xs text-neutral-400 mt-0.5">Change your credentials</p>
+            </div>
+          </div>
+          <ChevronRight size={15} className="text-neutral-300 dark:text-neutral-600" />
+        </button>
       </motion.div>
     </div>
   );
