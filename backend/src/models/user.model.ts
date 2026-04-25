@@ -72,35 +72,37 @@ userSchema.methods.addXP = function (amount: number) {
 
 
 userSchema.methods.updateStreak = function () {
-  const now = new Date();
-  const last = this.lastLogin ? new Date(this.lastLogin) : null;
-console.log("Last login:", this.lastLogin);
+  const nowUTC = new Date();
+  const lastUTC = this.lastLogin ? new Date(this.lastLogin) : null;
 
   if (typeof this.streak !== "number") this.streak = 0;
 
-  // No last login → first login
-  if (!last) {
+  if (!lastUTC) {
     this.streak = 1;
-    this.lastLogin = now;
+    this.lastLogin = nowUTC;
     return;
   }
 
-  // Use LOCAL date parts instead of UTC ones
-  const startOfToday:any = new Date(now.getFullYear(), now.getMonth(), now.getDate());
-  const startOfLastLogin: any = new Date(last.getFullYear(), last.getMonth(), last.getDate());
+  const isSameDay =
+    nowUTC.getUTCFullYear() === lastUTC.getUTCFullYear() &&
+    nowUTC.getUTCMonth() === lastUTC.getUTCMonth() &&
+    nowUTC.getUTCDate() === lastUTC.getUTCDate();
+
+  if (isSameDay) {
+    return;
+  }
 
   const diffDays = Math.floor(
-    (startOfToday - startOfLastLogin) / (1000 * 60 * 60 * 24)
+    (nowUTC.getTime() - lastUTC.getTime()) / (1000 * 60 * 60 * 24)
   );
- console.log("Difference in days:", diffDays);
-  if (diffDays === 0) {
-  
-    return;
-  }     // same day → no increment
-  else if (diffDays === 1) this.streak++; // next day → streak++
-  else this.streak = 1;            // missed days → reset
 
-  this.lastLogin = now;
+  if (diffDays === 1) {
+    this.streak++;
+  } else {
+    this.streak = 1;
+  }
+
+  this.lastLogin = nowUTC;
 };
 
 

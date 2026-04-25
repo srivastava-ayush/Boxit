@@ -11,19 +11,16 @@ export default function Login() {
   const [password, setPassword] = useState("");
   const [error, setError] = useState<string | null>(null);
 
-  const setUser = useAuthStore((state) => state.setUser); 
- const updateSteak = useAuthStore((state) => state.incrementStreak); // update steak ko shai karna hai make it call on login  
+const setUser = useAuthStore((state) => state.setUser); 
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
     setLoading(true);
     setError(null);
 
     try {
-      const res = await loginUser({username, password, email: ""});
+const res = await loginUser({username, password, email: ""});
       setUser(res.user); 
-   
-      await updateSteak();
-         
+        
       // Redirect or show success message
       window.location.href = "/profile";
 
