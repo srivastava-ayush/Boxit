@@ -181,7 +181,7 @@ export default function Select() {
 
           {/* Legend */}
           {showLegend && (
-            <div className="w-full max-w-2xl bg-[#202023b6] shadow-2xl rounded-xl p-6 mb-8">
+            <div className="w-full max-w-2xl bg-[#f6f6f642] shadow-2xl rounded-xl p-6 mb-8">
               <h3 className="text-xl font-bold mb-4">Boxing Combo Legend</h3>
               <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
                 {punchTypes.map((punch) => (

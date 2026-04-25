@@ -335,11 +335,11 @@ export default function Learn() {
       initial={{ filter: "blur(10px)", opacity: 0 }}
       animate={{ filter: "blur(0px)", opacity: 1 }}
       transition={{ duration: 2 }}
-      className="min-h-screen relative bg-[#1a1a1a] text-white flex flex-col pt-28 px-4 md:py-34 py-12 md:px-12"
-    ><img src={paperTex} alt="Paper texture overlay" className="absolute inset-0 w-full h-full object-cover opacity-20 mix-blend-overlay pointer-events-none rounded-xl" />
+      className="min-h-screen relative bg-[#141414] text-white flex flex-col pt-28 px-4 md:py-34 py-12 md:px-12"
+    ><img src={paperTex} alt="Paper texture overlay" className="absolute inset-0 w-full h-full object-cover opacity-40 mix-blend-overlay pointer-events-none rounded-xl" />
           
-         <span className="absolute -z-1 blur-[400px] top-0 left-0 w-[50%] h-[40%] bg-[#969696a7]" />
-         <span className="absolute -z-1 blur-[400px] top-0 right-0 w-[50%] h-[40%] bg-[#15151578] " />
+         {/* <span className="absolute -z-1 blur-[400px] top-0 left-0 w-[50%] h-[40%] bg-[#969696a7]" />
+         <span className="absolute -z-1 blur-[400px] top-0 right-0 w-[50%] h-[40%] bg-[#15151578] " /> */}
       <ScrollToTop />
       {/* Header with navigation */}
       <div className="container mx-auto mb-12 flex items-center">

@@ -6,8 +6,7 @@ import { motion } from "framer-motion";
 import * as poseDetection from "@tensorflow-models/pose-detection";
 import "@tensorflow/tfjs-backend-webgl";
 import * as tf from "@tensorflow/tfjs";
-import { ArrowLeft } from "lucide-react";
-import ScrollToTop from "../ui/ScrollToTop";
+import { ArrowLeft, Maximize2, Minimize2 } from "lucide-react";
 import ComboTray from "../ui/comboTray";
 import TrainHud from "../ui/TrainHud";
 import TrainControls from "../ui/TrainControls";
@@ -45,19 +44,28 @@ interface LastPositions {
 
 // Skeleton connections for pose visualization
 const SKELETON_CONNECTIONS = [
-  [0, 1], [0, 2], [1, 3], [2, 4], // Face
+  [0, 1],
+  [0, 2],
+  [1, 3],
+  [2, 4], // Face
   [5, 6], // Shoulders
-  [5, 7], [7, 9], // Left arm
-  [6, 8], [8, 10], // Right arm
-  [5, 11], [6, 12], // Torso
+  [5, 7],
+  [7, 9], // Left arm
+  [6, 8],
+  [8, 10], // Right arm
+  [5, 11],
+  [6, 12], // Torso
   [11, 12], // Hips
-  [11, 13], [13, 15], // Left leg
-  [12, 14], [14, 16], // Right leg
+  [11, 13],
+  [13, 15], // Left leg
+  [12, 14],
+  [14, 16], // Right leg
 ];
 
 export default function Train() {
   const location = useLocation();
-  const comboString = new URLSearchParams(location.search).get("combo") || "1-2";
+  const comboString =
+    new URLSearchParams(location.search).get("combo") || "1-2";
   const combo = parseCombo(comboString);
 
   // Training state
@@ -77,6 +85,9 @@ export default function Train() {
   const [isAudioLoaded, setIsAudioLoaded] = useState(false);
   const [modelLoadError, setModelLoadError] = useState("");
   const [cameraEnabled, setCameraEnabled] = useState(false);
+  const [isFullscreen, setIsFullscreen] = useState(false);
+  const mainContainerRef = useRef<HTMLDivElement>(null);
+  const hudContainerRef = useRef<HTMLDivElement>(null);
 
   // Refs
   const timeoutRef = useRef<NodeJS.Timeout | null>(null);
@@ -112,9 +123,9 @@ export default function Train() {
         console.log("Loading MoveNet model...");
         const detector = await poseDetection.createDetector(
           poseDetection.SupportedModels.MoveNet,
-          { modelType: poseDetection.movenet.modelType.SINGLEPOSE_LIGHTNING }
+          { modelType: poseDetection.movenet.modelType.SINGLEPOSE_LIGHTNING },
         );
-        
+
         if (isMounted) {
           detectorRef.current = detector;
           setIsModelLoaded(true);
@@ -123,7 +134,9 @@ export default function Train() {
       } catch (error) {
         console.error("Error initializing pose detector:", error);
         if (isMounted) {
-          setModelLoadError("Failed to load pose detection model. Please refresh the page.");
+          setModelLoadError(
+            "Failed to load pose detection model. Please refresh the page.",
+          );
         }
       }
     };
@@ -172,7 +185,8 @@ export default function Train() {
   // Initialize audio context
   const initAudioContext = useCallback(() => {
     if (!audioContextRef.current) {
-      const AudioContext = window.AudioContext || (window as any).webkitAudioContext;
+      const AudioContext =
+        window.AudioContext || (window as any).webkitAudioContext;
       audioContextRef.current = new AudioContext();
     }
   }, []);
@@ -206,15 +220,18 @@ export default function Train() {
   }, [intervalTime]);
 
   // Play punch sound
-  const playPunchSound = useCallback((punchId: string) => {
-    const audio = punchAudioMap[punchId];
-    if (audio) {
-      audio.pause();
-      audio.currentTime = 0;
-      audio.playbackRate = getPlaybackRate();
-      audio.play().catch((e) => console.error("Failed to play sound:", e));
-    }
-  }, [getPlaybackRate]);
+  const playPunchSound = useCallback(
+    (punchId: string) => {
+      const audio = punchAudioMap[punchId];
+      if (audio) {
+        audio.pause();
+        audio.currentTime = 0;
+        audio.playbackRate = getPlaybackRate();
+        audio.play().catch((e) => console.error("Failed to play sound:", e));
+      }
+    },
+    [getPlaybackRate],
+  );
 
   // Draw skeleton on canvas
   const drawSkeleton = useCallback(
@@ -252,31 +269,34 @@ export default function Train() {
         }
       });
     },
-    []
+    [],
   );
 
   // Detect punches from wrist movement
-  const detectPunch = useCallback((wrist: poseDetection.Keypoint, side: 'left' | 'right') => {
-    if (!wrist?.score || wrist.score <= WRIST_CONFIDENCE_THRESHOLD) return;
+  const detectPunch = useCallback(
+    (wrist: poseDetection.Keypoint, side: "left" | "right") => {
+      if (!wrist?.score || wrist.score <= WRIST_CONFIDENCE_THRESHOLD) return;
 
-    const prev = lastPositions.current[side];
+      const prev = lastPositions.current[side];
 
-    if (prev) {
-      const dx = wrist.x - prev.x;
-      const dy = wrist.y - prev.y;
-      const speed = Math.sqrt(dx * dx + dy * dy);
+      if (prev) {
+        const dx = wrist.x - prev.x;
+        const dy = wrist.y - prev.y;
+        const speed = Math.sqrt(dx * dx + dy * dy);
 
-      if (speed > PUNCH_SPEED_THRESHOLD && !cooldownRef.current) {
-        setPunchCount((c) => c + 1);
-        cooldownRef.current = true;
-        setTimeout(() => {
-          cooldownRef.current = false;
-        }, PUNCH_COOLDOWN);
+        if (speed > PUNCH_SPEED_THRESHOLD && !cooldownRef.current) {
+          setPunchCount((c) => c + 1);
+          cooldownRef.current = true;
+          setTimeout(() => {
+            cooldownRef.current = false;
+          }, PUNCH_COOLDOWN);
+        }
       }
-    }
 
-    lastPositions.current[side] = { x: wrist.x, y: wrist.y };
-  }, []);
+      lastPositions.current[side] = { x: wrist.x, y: wrist.y };
+    },
+    [],
+  );
 
   // Pose detection loop
   const detect = useCallback(async () => {
@@ -310,7 +330,10 @@ export default function Train() {
       if (!ctx) return;
 
       // Update canvas size if needed
-      if (canvas.width !== video.videoWidth || canvas.height !== video.videoHeight) {
+      if (
+        canvas.width !== video.videoWidth ||
+        canvas.height !== video.videoHeight
+      ) {
         canvas.width = video.videoWidth;
         canvas.height = video.videoHeight;
       }
@@ -328,8 +351,8 @@ export default function Train() {
         const leftWrist = keypoints.find((k) => k.name === "left_wrist");
         const rightWrist = keypoints.find((k) => k.name === "right_wrist");
 
-        if (leftWrist) detectPunch(leftWrist, 'left');
-        if (rightWrist) detectPunch(rightWrist, 'right');
+        if (leftWrist) detectPunch(leftWrist, "left");
+        if (rightWrist) detectPunch(rightWrist, "right");
       }
     } catch (error) {
       console.error("Pose detection error:", error);
@@ -394,7 +417,12 @@ export default function Train() {
         // Clear canvas
         if (canvasRef.current) {
           const ctx = canvasRef.current.getContext("2d");
-          ctx?.clearRect(0, 0, canvasRef.current.width, canvasRef.current.height);
+          ctx?.clearRect(
+            0,
+            0,
+            canvasRef.current.width,
+            canvasRef.current.height,
+          );
         }
 
         // Reset detection state
@@ -468,7 +496,11 @@ export default function Train() {
       countdownRef.current = setTimeout(() => {
         setCountdown((prev) => prev - 1);
       }, 1000);
-    } else if (countdown === 0 && isTraining && trainingStateRef.current.isActive) {
+    } else if (
+      countdown === 0 &&
+      isTraining &&
+      trainingStateRef.current.isActive
+    ) {
       nextPunch();
     }
 
@@ -498,7 +530,7 @@ export default function Train() {
       alert("Please wait for all resources to load first.");
       return;
     }
-    
+
     setPunchCount(0);
     initAudioContext();
     setRepsLeft(reps);
@@ -518,7 +550,7 @@ export default function Train() {
     setIsTraining(false);
     setIsPaused(false);
     trainingStateRef.current.isActive = false;
-    
+
     if (timeoutRef.current) {
       clearTimeout(timeoutRef.current);
       timeoutRef.current = null;
@@ -527,7 +559,7 @@ export default function Train() {
       clearTimeout(countdownRef.current);
       countdownRef.current = null;
     }
-    
+
     setCurrentPunch("");
     setCurrentIndex(0);
     setRepsLeft(reps);
@@ -551,23 +583,41 @@ export default function Train() {
 
   // Cleanup on unmount
   useEffect(() => {
+    const handleFullscreenChange = () => {
+      setIsFullscreen(!!document.fullscreenElement);
+    };
+
+    document.addEventListener("fullscreenchange", handleFullscreenChange);
+
     return () => {
+      document.removeEventListener("fullscreenchange", handleFullscreenChange);
       if (timeoutRef.current) clearTimeout(timeoutRef.current);
       if (countdownRef.current) clearTimeout(countdownRef.current);
       if (animationIdRef.current) cancelAnimationFrame(animationIdRef.current);
-      
+
       if (streamRef.current) {
         streamRef.current.getTracks().forEach((track) => track.stop());
       }
-      
+
       detectorRef.current?.dispose();
-      
+
       if (audioContextRef.current) {
         audioContextRef.current.close();
       }
-      
+
       tf.disposeVariables();
     };
+  }, []);
+
+  // Fullscreen toggle
+  const toggleFullscreen = useCallback(() => {
+    if (!hudContainerRef.current) return;
+
+    if (!document.fullscreenElement) {
+      hudContainerRef.current.requestFullscreen().catch(console.error);
+    } else {
+      document.exitFullscreen().catch(console.error);
+    }
   }, []);
 
   return (
@@ -576,86 +626,98 @@ export default function Train() {
       animate={{ opacity: 1, filter: "blur(0px)" }}
       exit={{ opacity: 0 }}
       transition={{ duration: 0.5 }}
-      className="min-h-screen bg-black/20 relative h-full text-white flex flex-col px-4 pt-24 md:px-12 py-8 md:py-24"
+      ref={mainContainerRef}
+      className="min-h-screen relative h-full text-white bg-black/50 pt-20"
     >
-       
-       
-      <span className="absolute -z-1 blur-[200px] sm:blur-[300px] md:blur-[100px] top-0 left-0 w-[80%] sm:w-[60%] md:w-[50%] h-[30%] sm:h-[35%] md:h-[40%] bg-[#70707061]" />
-      <span className="absolute -z-1 blur-[200px] sm:blur-[300px] md:blur-[300px] top-0 right-0 w-[80%] sm:w-[60%] md:w-[50%] h-[30%] sm:h-[35%] md:h-[40%] bg-[#575cfa43]" />
-      <ScrollToTop />
-      <div className="train-bg w-full h-full fixed top-0 left-0 opacity-10 -z-7" />
+      {/* Train background */}
+      <div className="train-bg w-full h-full fixed top-0 left-0 opacity-5 -z-10" />
 
-      {/* Header */}
-      <header className="container mx-auto flex items-center gap-4 justify-between py-2">
-        <Link
-          to="/select"
-          className="flex items-center justify-center rounded-full bg-black border-red-600 border-2 p-3 hover:bg-red-600 transition-colors"
+      {/* Scanlines overlay */}
+      <div
+        className="fixed inset-0 pointer-events-none z-50 opacity-10"
+        style={{
+          backgroundImage:
+            "repeating-linear-gradient(0deg, transparent, transparent 2px, rgba(0,0,0,0.3) 2px, rgba(0,0,0,0.3) 4px)",
+        }}
+      />
+      <span className="absolute -z-1 blur-[400px] top-0 left-0 w-[50%] h-[40%] bg-[#ffffff94]" />
+      <span className="absolute -z-1 blur-[400px] top-0 right-0 w-[50%] h-[40%] bg-[#575cfa43] " />
+{/* ── HEADER ── */}
+      <header className="hidden">{/* Hidden - moved to TrainHud */}</header>
+
+      {/* ── MAIN ── */}
+      <main className="pt-10 pb-32 px-4 flex flex-col items-center justify-center gap-6">
+        {/* HUD */}
+        <div
+          ref={hudContainerRef}
+          className={`w-full flex items-center justify-center ${
+            isFullscreen ? "max-w-none h-screen" : "max-w-4xl "
+          }`}
         >
-          <ArrowLeft className="w-5 h-5" />
-        </Link>
-
-        <div className="flex items-center w-full gap-8">
-          <h1 className="text-xl sm:text-3xl md:text-5xl font-bold ml-0 sm:ml-4 helvetica-font">
-            Training Mode
-          </h1>
-          <div className="h-1 flex-grow bg-red-600 rounded-full"></div>
+          <TrainHud
+            canvasRef={canvasRef}
+            videoRef={videoRef}
+            toggleCamera={toggleCamera}
+            cameraEnabled={cameraEnabled}
+            punchCount={punchCount}
+            countdown={countdown}
+            isTraining={isTraining}
+            currentPunch={currentPunch}
+            repsLeft={repsLeft}
+            reps={reps}
+            currentIndex={currentIndex}
+            punchTypes={punchTypes}
+            isFullyLoaded={isFullyLoaded}
+            isModelLoaded={isModelLoaded}
+            isAudioLoaded={isAudioLoaded}
+            toggleFullscreen={toggleFullscreen}
+            isFullscreen={isFullscreen}
+          />
         </div>
-      </header>
 
-      <div className="container mx-auto px-1 pt-12 flex-1 flex flex-col items-center">
-        {/* Combo display */}
-        <ComboTray
-          combo={combo}
-          currentIndex={currentIndex}
-          isTraining={isTraining}
-          isPaused={isPaused}
-          punchTypes={punchTypes}
-          comboString={comboString}
-        />
+        <div className="w-full flex justify-center items-center flex-col">
+           <div className={` ${isFullscreen ? "hidden" : " w-full max-w-4xl"}`}>
+            {/* Combo Tray */}
+           
+              <ComboTray
+                combo={combo}
+                currentIndex={currentIndex}
+                isTraining={isTraining}
+                isPaused={isPaused}
+                punchTypes={punchTypes}
+                comboString={comboString}
+              />
+         
+            {/* Controls */}
+            
+              <TrainControls
+                setShowSettings={setShowSettings}
+                showSettings={showSettings}
+                isTraining={isTraining}
+                startTraining={startTraining}
+                stopTraining={stopTraining}
+                isPaused={isPaused}
+                togglePause={togglePause}
+                intervalTime={intervalTime}
+                setIntervalTime={setIntervalTime}
+                reps={reps}
+                setReps={setReps}
+                setRepsLeft={setRepsLeft}
+              />
+       
+          </div>
+        </div>
+      </main>
 
-        {/* Main display area */}
-        <TrainHud
-          canvasRef={canvasRef}
-          videoRef={videoRef}
-          toggleCamera={toggleCamera}
-          cameraEnabled={cameraEnabled}
-          punchCount={punchCount}
-          countdown={countdown}
-          isTraining={isTraining}
-          currentPunch={currentPunch}
-          repsLeft={repsLeft}
-          reps={reps}
-          currentIndex={currentIndex}
-          punchTypes={punchTypes}
-          isFullyLoaded={isFullyLoaded}
-          isModelLoaded={isModelLoaded}
-          isAudioLoaded={isAudioLoaded}
-        />
-
-        {/* Controls */}
-        <TrainControls
-          setShowSettings={setShowSettings}
-          showSettings={showSettings}
-          isTraining={isTraining}
-          startTraining={startTraining}
-          stopTraining={stopTraining}
-          isPaused={isPaused}
-          togglePause={togglePause}
-          intervalTime={intervalTime}
-          setIntervalTime={setIntervalTime}
-          reps={reps}
-          setReps={setReps}
-          setRepsLeft={setRepsLeft}
-        />
-      </div>
-
-      {/* Footer */}
-      <footer className="container mx-auto px-4 py-6 border-t border-gray-800">
-        <p className="text-center text-gray-200 text-sm sm:text-base md:text-xl russo">
-          Follow the visual and audio cues to complete your boxing combo <br />
-          *Punch count is approximate — for training use only.
-
-      
+      {/* ── FOOTER ── */}
+      <footer
+        className={`fixed bottom-0 left-0 right-0 z-40 px-4 py-3 bg-gradient-to-t from-black/95 to-transparent ${
+          isFullscreen ? "hidden" : ""
+        }`}
+      >
+        <p className="text-center text-gray-500 text-xs tracking-widest uppercase pb-10">
+         Follow the visual and audio cues to complete your boxing combo<br/>
+*Punch count is approximate — for training use only.
         </p>
       </footer>
     </motion.div>

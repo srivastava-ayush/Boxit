@@ -41,7 +41,7 @@ const res = await loginUser({username, password, email: ""});
       <motion.div
         initial={{ opacity: 0, y: 40 }}
         animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.6, ease: "easeOut" }}
+        transition={{ duration: 0.2, ease: "easeOut" }}
         className="w-full max-w-md bg-[#67676732] backdrop-blur-xl rounded-2xl shadow-xl shadow-[#ffffff06] p-8 border border-white/40"
       >
         <h2 className="text-3xl font-bold text-center text-white">
@@ -79,7 +79,7 @@ const res = await loginUser({username, password, email: ""});
             whileTap={{ scale: 0.97 }}
             type="submit"
             disabled={loading}
-            className="w-full bg-red-600 hover:bg-red-700 disabled:opacity-50 rounded-xl py-3 text-lg font-semibold text-white shadow-md transition"
+            className="w-full font-bold bg-gradient-to-r from-[#fd5353] to-red-600  hover:bg-black flex items-center justify-center  gap-2 disabled:opacity-50 rounded-xl py-3 text-lg  text-white shadow-md transition"
           >
             {loading ? "Logging in..." : "Login"}
           </motion.button>
