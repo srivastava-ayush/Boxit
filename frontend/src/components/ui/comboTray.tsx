@@ -11,7 +11,7 @@ function ComboTray({combo, currentIndex, isTraining, isPaused, punchTypes, combo
 }) {
   return (
     <div className="bg-white/20 shadow-2xl rounded-xl p-6 mb-8 relative overflow-hidden">
-      <img src={paperTex} alt="Paper texture overlay" className="absolute inset-0 w-full h-full object-cover opacity-40 mix-blend-overlay pointer-events-none rounded-xl" />
+      <img src={paperTex} alt="Paper texture overlay" className="absolute inset-0 w-full h-full object-cover opacity-10 mix-blend-overlay pointer-events-none rounded-xl" />
       
       <h2 className="text-xl font-semibold mb-4 flex items-center gap-2 relative z-10">
         <List className="w-5 h-5" />
