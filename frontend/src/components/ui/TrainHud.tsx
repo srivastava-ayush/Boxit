@@ -35,6 +35,7 @@ interface TrainHudProps {
   isAudioLoaded: boolean;
   toggleFullscreen: () => void;
   isFullscreen: boolean;
+  reward?: { xpGained: number; levelGained: number } | null;
 }
 
 function TrainHud({
@@ -55,6 +56,7 @@ function TrainHud({
   isAudioLoaded,
   toggleFullscreen,
   isFullscreen,
+  reward,
 }: TrainHudProps) {
   const [menuOpen, setMenuOpen] = useState(false);
 
@@ -335,6 +337,67 @@ function TrainHud({
           </div>
         </motion.div>
       )}
+
+      {/* Reward Toast */}
+      <AnimatePresence>
+        {reward && (
+          <motion.div
+            initial={{ opacity: 0, scale: 0.5, y: -40 }}
+            animate={{ opacity: 1, scale: 1, y: 0 }}
+            exit={{ opacity: 0, scale: 0.5, y: -40 }}
+            transition={{ type: "spring", stiffness: 500, damping: 22, mass: 0.8 }}
+            className="absolute top-16 left-1/2 -translate-x-1/2 z-50 flex flex-col items-center gap-1 pointer-events-none"
+          >
+            {/* XP Badge */}
+            <motion.div
+              initial={{ clipPath: "inset(0 100% 0 0)" }}
+              animate={{ clipPath: "inset(0 0% 0 0)" }}
+              transition={{ delay: 0.1, duration: 0.5, ease: [0.16, 1, 0.3, 1] }}
+              className="relative overflow-hidden"
+            >
+              <div className="flex items-center gap-2.5 bg-gradient-to-r from-[#1a1a1a] to-[#0d0d0d] px-5 py-2.5 rounded-lg border border-[#dc2626]/40 shadow-[0_0_25px_rgba(220,38,38,0.25),inset_0_1px_0_rgba(255,255,255,0.06)]">
+                <motion.span
+                  animate={{ rotate: [0, -15, 0, 15, 0] }}
+                  transition={{ delay: 0.3, duration: 0.5 }}
+                  className="text-lg"
+                >
+                  ⚡
+                </motion.span>
+                <span className="font-black text-lg tracking-wide text-white/90">
+                  <span className="text-[#dc2626] mr-1">+</span>
+                  {reward.xpGained}
+                  <span className="ml-1.5 text-xs font-semibold text-[#dc2626]/80 tracking-[0.15em] uppercase">XP</span>
+                </span>
+                <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/[0.03] to-transparent -skew-x-12 animate-shimmer" />
+              </div>
+            </motion.div>
+
+            {/* Level Badge */}
+            <motion.div
+              initial={{ clipPath: "inset(0 100% 0 0)" }}
+              animate={{ clipPath: "inset(0 0% 0 0)" }}
+              transition={{ delay: 0.35, duration: 0.5, ease: [0.16, 1, 0.3, 1] }}
+              className="relative overflow-hidden"
+            >
+              <div className="flex items-center gap-2.5 bg-gradient-to-r from-[#1a1a1a] to-[#0d0d0d] px-5 py-2.5 rounded-lg border border-[#dc2626]/40 shadow-[0_0_25px_rgba(220,38,38,0.25),inset_0_1px_0_rgba(255,255,255,0.06)]">
+                <motion.span
+                  animate={{ rotate: [0, -15, 0, 15, 0] }}
+                  transition={{ delay: 0.55, duration: 0.5 }}
+                  className="text-lg"
+                >
+                  🏆
+                </motion.span>
+                <span className="font-black text-lg tracking-wide text-white/90">
+                  <span className="text-[#dc2626] mr-1">+</span>
+                  {reward.levelGained.toFixed(2)}
+                  <span className="ml-1.5 text-xs font-semibold text-[#dc2626]/80 tracking-[0.15em] uppercase">Level</span>
+                </span>
+                <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/[0.03] to-transparent -skew-x-12 animate-shimmer" />
+              </div>
+            </motion.div>
+          </motion.div>
+        )}
+      </AnimatePresence>
     </div>
   );
 }

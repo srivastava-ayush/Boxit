@@ -3,6 +3,7 @@ import cors from "cors";
 import connectDB from "./configs/db";
 import dotenv from "dotenv";
 import authRoutes from "./routes/auth.routes";
+import workoutRoutes from "./routes/workout.routes";
 import cookieParser from "cookie-parser";
 
 
@@ -34,5 +35,6 @@ app.use(
 app.use(express.json());
 app.use(cookieParser());
 app.use("/auth", authRoutes);
+app.use("/workouts", workoutRoutes);
 
 export default app;

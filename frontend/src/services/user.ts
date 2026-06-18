@@ -2,8 +2,8 @@ import api from "../api/api"; //  axios wrapper
 
 
 const fetchMe = async function() {
-    const res = await api.get("/me");
-    return res.data.user;
+    const res = await api.get("/auth/me");
+    return res.data;
 }
 const addXp = async function(amount: number) {
     const res = await api.patch("/auth/me", { action: "addXp", amount });

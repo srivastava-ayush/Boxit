@@ -33,15 +33,16 @@ function Navbar() {
         <li className="font-bold  dark:text-white/80 russo text-2xl">Box'Lit</li>
         <li>
           <ul className="flex w-fit gap-4 justify-between items-center text-white/80 ">
-            <Link
-              to="/"
-              className="hover:cursor-pointer font-medium navlink transition-all duration-300"
-            >
-              Home
-            </Link>
+            
 
             {!user && (
               <>
+                <Link
+                  to="/"
+                  className="hover:cursor-pointer font-medium navlink transition-all duration-300"
+                >
+                  Home
+                </Link>
                 <Link
                   to="/signup"
                   className="hover:cursor-pointer font-medium navlink transition-all duration-300"
@@ -55,6 +56,23 @@ function Navbar() {
                   Login
                 </Link>
               </>
+            )}
+
+            {user && (
+              <Link to={"/learn"}
+                className="hover:cursor-pointer font-medium navlink transition-all duration-300"
+              >
+                Learn
+              </Link>
+            )}
+
+            {user && (
+              <Link 
+                to={"/select"}
+                className="hover:cursor-pointer font-medium navlink transition-all duration-300"
+              >
+                Train
+              </Link>
             )}
 
             {user && (

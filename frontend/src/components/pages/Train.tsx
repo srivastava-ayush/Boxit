@@ -1,12 +1,13 @@
 "use client";
 import { useState, useEffect, useRef, useCallback } from "react";
 import { useLocation } from "react-router";
-import { Link } from "react-router";
+
 import { motion } from "framer-motion";
 import * as poseDetection from "@tensorflow-models/pose-detection";
 import "@tensorflow/tfjs-backend-webgl";
 import * as tf from "@tensorflow/tfjs";
 import { ArrowLeft, Maximize2, Minimize2 } from "lucide-react";
+import api from "../../api/api";
 import ComboTray from "../ui/comboTray";
 import TrainHud from "../ui/TrainHud";
 import TrainControls from "../ui/TrainControls";
@@ -79,6 +80,7 @@ export default function Train() {
   const [countdown, setCountdown] = useState(0);
   const [showSettings, setShowSettings] = useState(true);
   const [punchCount, setPunchCount] = useState(0);
+  const [reward, setReward] = useState<{ xpGained: number; levelGained: number } | null>(null);
 
   // Loading states
   const [isModelLoaded, setIsModelLoaded] = useState(false);
@@ -477,6 +479,11 @@ export default function Train() {
           setIsTraining(false);
           trainingStateRef.current.isActive = false;
           setCurrentPunch("Workout Complete!");
+
+          api
+            .post("/workouts", { combo: comboString, reps: reps })
+            .then((res) => setReward({ xpGained: res.data.xpGained, levelGained: res.data.levelGained }))
+            .catch(console.error);
           return;
         }
       }
@@ -532,6 +539,7 @@ export default function Train() {
     }
 
     setPunchCount(0);
+    setReward(null);
     initAudioContext();
     setRepsLeft(reps);
     setCountdown(COUNTDOWN_DURATION);
@@ -565,6 +573,13 @@ export default function Train() {
     setRepsLeft(reps);
     lastPositions.current = { left: null, right: null };
   }, [reps]);
+
+  // Auto-dismiss reward toast after 4s
+  useEffect(() => {
+    if (!reward) return;
+    const id = setTimeout(() => setReward(null), 4000);
+    return () => clearTimeout(id);
+  }, [reward]);
 
   // Toggle pause
   const togglePause = useCallback(() => {
@@ -672,6 +687,7 @@ export default function Train() {
             isAudioLoaded={isAudioLoaded}
             toggleFullscreen={toggleFullscreen}
             isFullscreen={isFullscreen}
+            reward={reward}
           />
         </div>
 

@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { motion } from "framer-motion";
+import { motion, AnimatePresence } from "framer-motion";
 import { loginUser } from "../../services/auth"; 
 import { useAuthStore } from "../../stores/authStore"; 
 
@@ -10,6 +10,7 @@ export default function Login() {
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState<string | null>(null);
+  const [streakReward, setStreakReward] = useState<{ xpGained: number; levelGained: number } | null>(null);
 
 const setUser = useAuthStore((state) => state.setUser); 
   const handleLogin = async (e: React.FormEvent) => {
@@ -20,9 +21,15 @@ const setUser = useAuthStore((state) => state.setUser);
     try {
 const res = await loginUser({username, password, email: ""});
       setUser(res.user); 
-        
-      // Redirect or show success message
-      window.location.href = "/profile";
+
+      if (res.streakReward) {
+        setStreakReward(res.streakReward);
+        setTimeout(() => {
+          window.location.href = "/profile";
+        }, 2000);
+      } else {
+        window.location.href = "/profile";
+      }
 
     } catch (err: any) {
       setError(err.response?.data?.message || "Login failed");
@@ -86,12 +93,71 @@ const res = await loginUser({username, password, email: ""});
         </form>
 
         <p className="text-gray-300 text-sm text-center mt-6">
-          Don’t have an account?{" "}
+          Don't have an account?{" "}
           <a href="/signup" className="text-red-400 hover:underline">
             Sign up
           </a>
         </p>
       </motion.div>
+
+      {/* Streak Reward Toast */}
+      <AnimatePresence>
+        {streakReward && (
+          <motion.div
+            initial={{ opacity: 0, scale: 0.5, y: -40 }}
+            animate={{ opacity: 1, scale: 1, y: 0 }}
+            exit={{ opacity: 0, scale: 0.5, y: -40 }}
+            transition={{ type: "spring", stiffness: 500, damping: 22, mass: 0.8 }}
+            className="fixed top-6 left-1/2 -translate-x-1/2 z-50 flex flex-col items-center gap-1 pointer-events-none"
+          >
+            <motion.div
+              initial={{ clipPath: "inset(0 100% 0 0)" }}
+              animate={{ clipPath: "inset(0 0% 0 0)" }}
+              transition={{ delay: 0.1, duration: 0.5, ease: [0.16, 1, 0.3, 1] }}
+              className="relative overflow-hidden"
+            >
+              <div className="flex items-center gap-2.5 bg-gradient-to-r from-[#1a1a1a] to-[#0d0d0d] px-5 py-2.5 rounded-lg border border-[#dc2626]/40 shadow-[0_0_25px_rgba(220,38,38,0.25),inset_0_1px_0_rgba(255,255,255,0.06)]">
+                <motion.span
+                  animate={{ rotate: [0, -15, 0, 15, 0] }}
+                  transition={{ delay: 0.3, duration: 0.5 }}
+                  className="text-lg"
+                >
+                  🔥
+                </motion.span>
+                <span className="font-black text-lg tracking-wide text-white/90">
+                  <span className="text-[#dc2626] mr-1">+</span>
+                  {streakReward.xpGained}
+                  <span className="ml-1.5 text-xs font-semibold text-[#dc2626]/80 tracking-[0.15em] uppercase">XP</span>
+                </span>
+                <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/[0.03] to-transparent -skew-x-12 animate-shimmer" />
+              </div>
+            </motion.div>
+
+            <motion.div
+              initial={{ clipPath: "inset(0 100% 0 0)" }}
+              animate={{ clipPath: "inset(0 0% 0 0)" }}
+              transition={{ delay: 0.35, duration: 0.5, ease: [0.16, 1, 0.3, 1] }}
+              className="relative overflow-hidden"
+            >
+              <div className="flex items-center gap-2.5 bg-gradient-to-r from-[#1a1a1a] to-[#0d0d0d] px-5 py-2.5 rounded-lg border border-[#dc2626]/40 shadow-[0_0_25px_rgba(220,38,38,0.25),inset_0_1px_0_rgba(255,255,255,0.06)]">
+                <motion.span
+                  animate={{ rotate: [0, -15, 0, 15, 0] }}
+                  transition={{ delay: 0.55, duration: 0.5 }}
+                  className="text-lg"
+                >
+                  🏆
+                </motion.span>
+                <span className="font-black text-lg tracking-wide text-white/90">
+                  <span className="text-[#dc2626] mr-1">+</span>
+                  {streakReward.levelGained.toFixed(2)}
+                  <span className="ml-1.5 text-xs font-semibold text-[#dc2626]/80 tracking-[0.15em] uppercase">Level</span>
+                </span>
+                <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/[0.03] to-transparent -skew-x-12 animate-shimmer" />
+              </div>
+            </motion.div>
+          </motion.div>
+        )}
+      </AnimatePresence>
     </div>
   );
 }

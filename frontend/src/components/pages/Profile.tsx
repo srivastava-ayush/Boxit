@@ -80,7 +80,7 @@ export default function ProfilePage() {
             { label: "Level",  value: user?.level,        icon: "🎚️" },
             { label: "XP",     value: user?.xp,           icon: "⚡" },
             { label: "Streak", value: user?.streak,       icon: "🔥" },
-            { label: "Awards", value: user?.achievements, icon: "⭐" },
+            { label: "Awards", value: "noob" , icon: "⭐" },
           ].map(({ label, value, icon }) => (
             <div key={label} className="flex flex-col items-center py-4 px-1">
               <span className="text-sm mb-0.5">{icon}</span>

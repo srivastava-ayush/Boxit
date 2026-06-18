@@ -9,26 +9,16 @@ import Login from "./components/pages/Login";
 import Signup from "./components/pages/Signup";
 import { ReactLenis } from 'lenis/react';
 import { useAuthStore } from "./stores/authStore";
-import { fetchMe } from "./services/auth";
 import ProfilePage from "./components/pages/Profile";
 import Test from "./components/pages/Test";
 import ProtectedRoute from "./components/ProtectedRoute";
 
 function App() {
-  const setUser = useAuthStore((state) => state.setUser);
+  const fetchUser = useAuthStore((state) => state.fetchUser);
 
   useEffect(() => {
-    const getUser = async () => {
-      try {
-        const userData = await fetchMe();
-        setUser(userData);
-      } catch (err) {
-        setUser(null); 
-      }
-    };
-
-    getUser();
-  }, [setUser]);
+    fetchUser();
+  }, [fetchUser]);
 
   return (
     <>

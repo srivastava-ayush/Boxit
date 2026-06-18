@@ -272,6 +272,15 @@ button,
   }
 }
 
+@keyframes shimmer {
+  0% { transform: translateX(-100%) skewX(-12deg); }
+  100% { transform: translateX(200%) skewX(-12deg); }
+}
+
+.animate-shimmer {
+  animation: shimmer 2.5s infinite;
+}
+
 /* Add this to your existing CSS */
 .hide-custom-cursor * {
   cursor: auto !important;

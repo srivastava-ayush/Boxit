@@ -29,7 +29,12 @@ export const registerUser = async (req: Request, res: Response) => {
     if (existingUser)
       return res.status(400).json({ message: "Username taken" });
 
-    const user = await User.create({ username, email, password });
+    let user = await User.create({ username, email, password });
+
+    user.updateStreak();
+    user.addXP(50);
+    user.level += 0.1;
+    await user.save({ validateBeforeSave: false });
 
     const token = generateToken(
       (user._id as mongoose.Types.ObjectId).toString()
@@ -53,6 +58,7 @@ export const registerUser = async (req: Request, res: Response) => {
         streak: user.streak,
         achievements: user.achievements,
       },
+      streakReward: { xpGained: 50, levelGained: 0.1 },
     });
   } catch (err: any) {
     res.status(500).json({ success: false, message: err.message });
@@ -73,12 +79,21 @@ export const loginUser = async (req: Request, res: Response) => {
     if (!isMatch)
       return res.status(400).json({ message: "Invalid credentials" });
 
+    const prevLastLogin = user.lastLogin;
     user.updateStreak();
 
-    await User.updateOne(
-      { _id: user._id },
-      { streak: user.streak, lastLogin: user.lastLogin }
-    );
+    const isNewDayLogin = !prevLastLogin || !user.lastLogin || prevLastLogin.getTime() !== user.lastLogin.getTime();
+
+    let streakReward = null;
+    if (isNewDayLogin) {
+      const streakXp = 50;
+      const streakLevel = 0.1;
+      user.addXP(streakXp);
+      user.level += streakLevel;
+      streakReward = { xpGained: streakXp, levelGained: streakLevel };
+    }
+
+    await user.save({ validateBeforeSave: false });
 
     const token = generateToken(
       (user._id as mongoose.Types.ObjectId).toString()
@@ -102,6 +117,7 @@ export const loginUser = async (req: Request, res: Response) => {
         streak: user.streak,
         achievements: user.achievements,
       },
+      streakReward,
     });
   } catch (err: any) {
     res.status(500).json({ success: false, message: err.message });
