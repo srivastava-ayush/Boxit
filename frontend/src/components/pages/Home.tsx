@@ -1,5 +1,5 @@
 import { motion } from "framer-motion";
-import { useRef, lazy } from "react";
+import { useState, lazy, useEffect, useRef } from "react";
 import heroImg from "../../../public/hero-img2.png";
 import paperTex from "../../../public/paper-texture.webp";
 import { Link } from "react-router";
@@ -49,6 +49,10 @@ function Home() {
   const scale2 = useTransform(scrollYProgress, [0, 0.5], [0.9, 1]);
   const scale1 = useTransform(scrollYProgress2, [0, 0.3], [0.9, 1]);
 
+
+
+  
+
   return (
     <div>
       {/* ─── HERO ─────────────────────────────────────────────────── */}
@@ -68,15 +72,17 @@ function Home() {
 
         <div className="relative z-10 max-w-3xl py-20">
           {/* Badge */}
-          {/* <motion.div
-            initial={{ opacity: 0, y: -10 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.1, duration: 0.6 }}
-            className="inline-flex items-center gap-2 mb-6 px-4 py-1.5 border border-red-500/40 bg-red-500/10 rounded-full text-red-400 text-xs font-semibold tracking-widest uppercase"
-          >
-            <Fire weight="fill" className="w-3.5 h-3.5" />
-           Your Ultimate Boxing Coach
-          </motion.div> */}
+          {true && (
+            <motion.div
+              initial={{ opacity: 0, y: -10 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.1, duration: 0.6 }}
+              className="inline-flex  items-center gap-2 mb-6 px-4 py-1.5 border border-red-500/40 bg-red-500/10 rounded-full text-red-400 text-xs font-semibold tracking-widest uppercase"
+            >
+              <Fire weight="fill" className="animate-pulse  w-3.5 h-3.5 text-yellow-300 " />
+              sign up now to get started!
+            </motion.div>
+          )}
 
           <h1 className="overflow-hidden leading-tight russo font-extrabold text-5xl md:text-[5rem] tracking-tight">
             {lines.map((line, i) => (

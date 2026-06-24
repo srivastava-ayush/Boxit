@@ -2,7 +2,7 @@
 import { create } from "zustand";
 import { fetchMe, addXp, incrementStreak, resetStreak } from "../services/user";
 
-interface User {
+export interface User {
   _id: string;
   username: string;
   email: string;
