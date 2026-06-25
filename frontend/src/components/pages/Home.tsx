@@ -8,7 +8,7 @@ import GallerySection from "../ui/gallery";
 import { useScroll, useTransform } from "framer-motion";
 import promo_2 from "../../../public/promo-2.png";
 import promo_3 from "../../../public/promo-3.jpeg";
-
+import { useAuthStore } from "../../stores/authStore";
 // Phosphor Icons — much richer than Lucide
 import {
   Sword,
@@ -49,7 +49,7 @@ function Home() {
   const scale2 = useTransform(scrollYProgress, [0, 0.5], [0.9, 1]);
   const scale1 = useTransform(scrollYProgress2, [0, 0.3], [0.9, 1]);
 
-
+  const user = useAuthStore((state) => state.user);
 
   
 
@@ -72,7 +72,7 @@ function Home() {
 
         <div className="relative z-10 max-w-3xl py-20">
           {/* Badge */}
-          {true && (
+          {!user && (
             <motion.div
               initial={{ opacity: 0, y: -10 }}
               animate={{ opacity: 1, y: 0 }}

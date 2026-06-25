@@ -13,6 +13,7 @@ import {
   BookOpenText,
   Sword,
   UserCircle,
+  FireIcon,
 } from "@phosphor-icons/react";
 
 const mobileNavItems = (
@@ -124,6 +125,11 @@ function Navbar() {
                 >
                   Profile
                 </Link>
+
+              )}
+              {user && (
+               <div className="flex justify-center items-center shadow-amber-300 shadow-2xl"><FireIcon className="text-orange-400" />{user.streak} </div>              
+                
               )}
             </ul>
           </li>
