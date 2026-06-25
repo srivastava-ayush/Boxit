@@ -60,17 +60,20 @@ userSchema.methods.matchPassword = async function (enteredPassword: string) {
 };
 
 userSchema.methods.addXP = function (amount: number) {
+  console.log(`Adding ${amount} XP to user ${this.username}`);
   this.xp += amount;
 
-  const requiredXP = this.level * 100;
-  if (this.xp >= requiredXP) {
+  console.log(`User ${this.username} now has ${this.xp} XP and is at level ${this.level}`);
+
+
+  while (this.xp >= this.level * 100) {
+    console.log(`User ${this.username} has enough XP to level up!`);
+    this.xp -= this.level * 100;
+    console.log(` current lvl: ${this.level}`);
     this.level++;
-    this.xp -= requiredXP;
+    console.log(` new lvl: ${this.level}`);
   }
 };
-
-
-
 userSchema.methods.updateStreak = function () {
   const nowUTC = new Date();
   const lastUTC = this.lastLogin ? new Date(this.lastLogin) : null;

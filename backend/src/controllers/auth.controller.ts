@@ -33,7 +33,7 @@ export const registerUser = async (req: Request, res: Response) => {
 
     user.updateStreak();
     user.addXP(50);
-    user.level += 0.1;
+
     await user.save({ validateBeforeSave: false });
 
     const token = generateToken(
@@ -58,7 +58,7 @@ export const registerUser = async (req: Request, res: Response) => {
         streak: user.streak,
         achievements: user.achievements,
       },
-      streakReward: { xpGained: 50, levelGained: 0.1 },
+      streakReward: { xpGained: 50 },
     });
   } catch (err: any) {
     res.status(500).json({ success: false, message: err.message });
@@ -87,10 +87,8 @@ export const loginUser = async (req: Request, res: Response) => {
     let streakReward = null;
     if (isNewDayLogin) {
       const streakXp = 50;
-      const streakLevel = 0.1;
       user.addXP(streakXp);
-      user.level += streakLevel;
-      streakReward = { xpGained: streakXp, levelGained: streakLevel };
+      streakReward = { xpGained: streakXp };
     }
 
     await user.save({ validateBeforeSave: false });
@@ -147,50 +145,3 @@ export const returnUser = async (req: AuthenticatedRequest, res: Response) => {
   }
 };
 
-export const updateUser = async (req: AuthenticatedRequest, res: Response) => {
-  try {
-    const { action, amount } = req.body;
-    const userId = req.user?.id;
-
-    if (!userId) {
-      return res.status(401).json({ message: "Unauthorized" });
-    }
-
-    let updateQuery = {};
-
-    switch (action) {
-      case "addXp":
-        if (typeof amount !== "number") {
-          return res.status(400).json({ message: "Invalid XP amount" });
-        }
-        updateQuery = { $inc: { xp: amount } };
-        break;
-
-      case "incrementStreak":
-        updateQuery = { $inc: { streak: 1 } };
-        break;
-
-      case "resetStreak":
-        updateQuery = { $set: { streak: 0 } };
-        break;
-
-      default:
-        return res.status(400).json({ message: "Invalid action" });
-    }
-
-    const updatedUser = await User.findByIdAndUpdate(userId, updateQuery, {
-      new: true,
-    });
-
-    if (!updatedUser) {
-      return res.status(404).json({ message: "User not found" });
-    }
-
-    const { password, ...safeUser } = updatedUser.toObject();
-
-    res.json({ success: true, user: safeUser });
-  } catch (err) {
-    console.error(err);
-    res.status(500).json({ message: "Server error" });
-  }
-};

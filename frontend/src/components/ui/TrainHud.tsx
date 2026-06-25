@@ -35,7 +35,7 @@ interface TrainHudProps {
   isAudioLoaded: boolean;
   toggleFullscreen: () => void;
   isFullscreen: boolean;
-  reward?: { xpGained: number; levelGained: number } | null;
+  reward?: { xpGained: number; levelGained: number , isNewLevel: boolean} | null;
 }
 
 function TrainHud({
@@ -373,7 +373,7 @@ function TrainHud({
             </motion.div>
 
             {/* Level Badge */}
-            <motion.div
+            {reward.isNewLevel && ( <motion.div
               initial={{ clipPath: "inset(0 100% 0 0)" }}
               animate={{ clipPath: "inset(0 0% 0 0)" }}
               transition={{ delay: 0.35, duration: 0.5, ease: [0.16, 1, 0.3, 1] }}
@@ -389,12 +389,12 @@ function TrainHud({
                 </motion.span>
                 <span className="font-black text-lg tracking-wide text-white/90">
                   <span className="text-[#dc2626] mr-1">+</span>
-                  {reward.levelGained.toFixed(2)}
+                  {reward.levelGained}
                   <span className="ml-1.5 text-xs font-semibold text-[#dc2626]/80 tracking-[0.15em] uppercase">Level</span>
                 </span>
                 <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/[0.03] to-transparent -skew-x-12 animate-shimmer" />
               </div>
-            </motion.div>
+            </motion.div>)}
           </motion.div>
         )}
       </AnimatePresence>
