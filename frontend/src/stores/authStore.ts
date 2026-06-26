@@ -10,6 +10,7 @@ export interface User {
   level: number;
   streak: number;
   achievements: string[];
+  isVerified?: boolean;
 }
 
 interface AuthState {

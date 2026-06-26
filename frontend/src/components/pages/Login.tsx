@@ -81,6 +81,10 @@ const res = await loginUser({username, password, email: ""});
 
           {error && <p className="text-red-400 text-sm">{error}</p>}
 
+          <div className="text-right -mt-4">
+            <a href="/forgot-password" className="text-sm text-gray-400 hover:text-red-400 transition">Forgot Password?</a>
+          </div>
+
           <motion.button
             whileHover={{ scale: 1.03 }}
             whileTap={{ scale: 0.97 }}

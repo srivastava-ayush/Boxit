@@ -27,3 +27,18 @@ export const fetchMe = async () => {
 export const logoutUser = async () => {
   await api.post("/auth/logout", {}, { withCredentials: true });
 };
+
+export const resetPassword = async (data: { token: string; newPassword: string }) => {
+  const res = await api.post("/auth/reset-password", data);
+  return res.data;
+};
+
+export const forgotPassword = async (data: { email: string }) => {
+  const res = await api.post("/auth/forgot-password", data);
+  return res.data;
+};
+
+export const verifyEmail = async (token: string) => {
+  const res = await api.get(`/auth/verify-email/${token}`);
+  return res.data;
+};

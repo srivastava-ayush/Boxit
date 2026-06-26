@@ -133,6 +133,12 @@ export default function ProfilePage() {
           <p className="text-lg font-semibold text-neutral-900 dark:text-white/90">{user?.username}</p>
           <p className="text-sm text-neutral-400 dark:text-neutral-500 mt-0.5">{user?.email}</p>
 
+          {user?.isVerified === false && (
+            <div className="mt-3 px-4 py-2 bg-amber-500/10 border border-amber-500/30 rounded-lg text-xs text-amber-400 text-center">
+              Email not verified — check your inbox for the verification link
+            </div>
+          )}
+
           {/* XP Bar */}
           <div className="w-full mt-5">
             <div className="flex justify-between text-xs text-neutral-400 dark:text-neutral-500 mb-1.5">
@@ -204,13 +210,14 @@ export default function ProfilePage() {
             </motion.div>
           ))}
 
-          <motion.div
+         <Link to="/reset-password">  
+         <motion.div
             initial={{ opacity: 0, x: -12 }}
             animate={{ opacity: 1, x: 0 }}
             transition={{ delay: 0.52, duration: 0.35 }}
            
           >
-            <button className="w-full !cursor-not-allowed  flex items-center justify-between px-5 py-[14px] hover:bg-neutral-100 dark:hover:bg-white/[0.03] transition-colors group ">
+           <button className="w-full flex items-center justify-between px-5 py-[14px] hover:bg-neutral-100 dark:hover:bg-white/[0.03] transition-colors group ">
               <div className="flex items-center gap-3">
                 <div className="w-[34px] h-[34px] rounded-lg bg-amber-100 dark:bg-amber-500/10 flex items-center justify-center text-amber-500 dark:text-amber-400">
                   <KeyRound size={16} />
@@ -222,9 +229,9 @@ export default function ProfilePage() {
               </div>
               <ChevronRight size={15} className="text-neutral-300 dark:text-neutral-600 group-hover:text-neutral-500 dark:group-hover:text-neutral-400 transition-colors " />
             </button>
-          </motion.div>
+          </motion.div> </Link>
         </div>
-      </motion.div>
-    </div>
+      </motion.div> 
+    </div> 
   );
 }

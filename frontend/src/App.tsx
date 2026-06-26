@@ -11,6 +11,9 @@ import { ReactLenis } from 'lenis/react';
 import { useAuthStore } from "./stores/authStore";
 import ProfilePage from "./components/pages/Profile";
 import Test from "./components/pages/Test";
+import PasswordReset from "./components/pages/PasswordReset";
+import ForgotPassword from "./components/pages/ForgotPassword";
+import VerifyEmail from "./components/pages/VerifyEmail";
 import ProtectedRoute from "./components/ProtectedRoute";
 
 function App() {
@@ -32,6 +35,9 @@ function App() {
           <Route path="/train" element={<><Navbar /><Train /> </>} />
           <Route path="/login" element={ <><Navbar /><Login /> </>} />
           <Route path="/signup" element={<><Navbar /><Signup /> </>} />
+          <Route path="/reset-password" element={<><Navbar /><PasswordReset /> </>} />
+          <Route path="/forgot-password" element={<><Navbar /><ForgotPassword /> </>} />
+          <Route path="/verify-email" element={<><Navbar /><VerifyEmail /> </>} />
           <Route path="/profile" element={
   <ProtectedRoute>
     <ProfilePage />

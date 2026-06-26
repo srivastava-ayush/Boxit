@@ -10,6 +10,11 @@ interface IUser extends mongoose.Document {
   streak: number;
   lastLogin?: Date;
   achievements: string[];
+  isVerified: boolean;
+  verificationToken?: string;
+  verificationTokenExpires?: Date;
+  resetPasswordToken?: string;
+  resetPasswordExpires?: Date;
   matchPassword(enteredPassword: string): Promise<boolean>;
   addXP(amount: number): void;
   updateStreak(): void;
@@ -44,6 +49,11 @@ const userSchema = new mongoose.Schema<IUser>({
   streak: { type: Number, default: 0 },
   lastLogin: Date,
   achievements: [String],
+  isVerified: { type: Boolean, default: false },
+  verificationToken: String,
+  verificationTokenExpires: Date,
+  resetPasswordToken: String,
+  resetPasswordExpires: Date,
 });
 
 

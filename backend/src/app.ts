@@ -1,13 +1,11 @@
 import express from "express";
 import cors from "cors";
 import connectDB from "./configs/db";
-import dotenv from "dotenv";
 import authRoutes from "./routes/auth.routes";
 import workoutRoutes from "./routes/workout.routes";
 import cookieParser from "cookie-parser";
 
 
-dotenv.config();
 connectDB();
 
 const app = express();

@@ -13,6 +13,7 @@ export default function Signup() {
   const [confirmPassword, setConfirmPassword] = useState("");
   const [error, setError] = useState<string | null>(null);
   const [streakReward, setStreakReward] = useState<{ xpGained: number; levelGained: number } | null>(null);
+  const [showVerifyMsg, setShowVerifyMsg] = useState(false);
 
   const setUser = useAuthStore((state) => state.setUser);
 
@@ -32,14 +33,13 @@ export default function Signup() {
       const res = await registerUser({ email, username, password });
       setUser(res.user);
 
+      setShowVerifyMsg(true);
       if (res.streakReward) {
         setStreakReward(res.streakReward);
-        setTimeout(() => {
-          window.location.href = "/profile";
-        }, 1500);
-      } else {
-        window.location.href = "/profile";
       }
+      setTimeout(() => {
+        window.location.href = "/profile";
+      }, 2500);
     } catch (err: any) {
       setError(err.response?.data?.message || "Signup failed");
     } finally {
@@ -140,6 +140,22 @@ export default function Signup() {
           </p>
         </motion.div>
       </div>
+
+      {/* Verify email prompt */}
+      <AnimatePresence>
+        {showVerifyMsg && (
+          <motion.div
+            initial={{ opacity: 0, y: 60 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: 60 }}
+            className="fixed bottom-6 left-1/2 -translate-x-1/2 z-50"
+          >
+            <div className="bg-[#1a1a1a] border border-amber-500/40 px-5 py-3 rounded-lg text-sm text-amber-400 shadow-lg text-center">
+              Check your email to verify your account
+            </div>
+          </motion.div>
+        )}
+      </AnimatePresence>
 
       {/* Streak Reward Toast */}
       <AnimatePresence>
