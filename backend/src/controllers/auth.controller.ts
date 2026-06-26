@@ -41,42 +41,13 @@ export const registerUser = async (req: Request, res: Response) => {
       verificationTokenExpires: new Date(Date.now() + 24 * 60 * 60 * 1000),
     });
 
-    user.updateStreak();
-    user.addXP(50);
-
-    await user.save({ validateBeforeSave: false });
-
     sendVerificationEmail(email, verificationToken).catch((err) =>
       console.error("[AUTH] Background verification email failed:", err)
     );
-    sendWelcomeEmail(email, username).catch((err) =>
-      console.error("[AUTH] Background welcome email failed:", err)
-    );
-
-    const token = generateToken(
-      (user._id as mongoose.Types.ObjectId).toString()
-    );
-
-    res.cookie("token", token, {
-      httpOnly: true,
-      secure: process.env.NODE_ENV === "production",
-      sameSite: "lax",
-    });
 
     res.status(201).json({
       success: true,
-      message: "User created ✅ Please verify your email",
-      user: {
-        _id: user._id,
-        username: user.username,
-        email: user.email,
-        xp: user.xp,
-        level: user.level,
-        streak: user.streak,
-        achievements: user.achievements,
-        isVerified: user.isVerified,
-      },
-      streakReward: { xpGained: 50 },
+      message: "Account created! Check your email to verify.",
     });
   } catch (err: any) {
     res.status(500).json({ success: false, message: err.message });
@@ -96,6 +67,10 @@ export const loginUser = async (req: Request, res: Response) => {
     const isMatch = await user.matchPassword(password);
     if (!isMatch)
       return res.status(400).json({ message: "Invalid credentials" });
+
+    if (!user.isVerified) {
+      return res.status(403).json({ message: "Please verify your email before logging in" });
+    }
 
     const prevLastLogin = user.lastLogin;
     user.updateStreak();
@@ -183,9 +158,40 @@ export const verifyEmail = async (req: Request, res: Response) => {
     user.isVerified = true;
     user.verificationToken = undefined;
     user.verificationTokenExpires = undefined;
+
+    user.updateStreak();
+    user.addXP(50);
+
     await user.save();
 
-    res.json({ success: true, message: "Email verified successfully" });
+    sendWelcomeEmail(user.email, user.username).catch((err) =>
+      console.error("[AUTH] Background welcome email failed:", err)
+    );
+
+    const jwtToken = generateToken(
+      (user._id as mongoose.Types.ObjectId).toString()
+    );
+
+    res.cookie("token", jwtToken, {
+      httpOnly: true,
+      secure: process.env.NODE_ENV === "production",
+      sameSite: "lax",
+    });
+
+    res.json({
+      success: true,
+      message: "Email verified successfully",
+      user: {
+        _id: user._id,
+        username: user.username,
+        email: user.email,
+        xp: user.xp,
+        level: user.level,
+        streak: user.streak,
+        achievements: user.achievements,
+        isVerified: user.isVerified,
+      },
+    });
   } catch (err: any) {
     res.status(500).json({ success: false, message: err.message });
   }

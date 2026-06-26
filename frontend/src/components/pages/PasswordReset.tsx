@@ -28,7 +28,8 @@ export default function PasswordReset() {
     }
 
     if (!token) {
-      setError("Invalid or missing reset token");
+      console.error("[PasswordReset] No token found. URL:", window.location.href);
+      setError("Invalid or missing reset token — make sure the URL contains ?token=...");
       setLoading(false);
       return;
     }

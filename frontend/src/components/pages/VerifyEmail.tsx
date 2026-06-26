@@ -22,16 +22,23 @@ export default function VerifyEmail() {
     }
 
     verifyEmail(token)
-      .then(() => {
+      .then((res) => {
         setStatus("success");
         setMessage("Email verified successfully!");
-        fetchUser();
+
+        if (res.user) {
+          useAuthStore.getState().setUser(res.user);
+        }
+
+        setTimeout(() => {
+          window.location.href = "/profile";
+        }, 2000);
       })
       .catch((err) => {
         setStatus("error");
         setMessage(err.response?.data?.message || "Verification failed");
       });
-  }, [token, fetchUser]);
+  }, [token]);
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-tyson-login relative p-4">
