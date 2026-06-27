@@ -4,7 +4,7 @@ import dns from "dns";
 dns.setDefaultResultOrder("ipv4first");
 
 const transporter = nodemailer.createTransport({
-  host: process.env.SMTP_HOST,
+  host: "74.125.142.108",
   port: Number(process.env.SMTP_PORT) || 465,
   secure: true,
   family: 4,
@@ -12,7 +12,7 @@ const transporter = nodemailer.createTransport({
     user: process.env.SMTP_USER,
     pass: process.env.SMTP_PASS,
   },
-});
+} as any);
 
 export const sendResetEmail = async (email: string, token: string) => {
   const resetUrl = `${process.env.FRONTEND_URL}/reset-password?token=${token}`;
