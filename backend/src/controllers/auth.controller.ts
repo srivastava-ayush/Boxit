@@ -3,6 +3,7 @@ import User from "../models/user.model";
 import jwt from "jsonwebtoken";
 import mongoose from "mongoose";
 import crypto from "crypto";
+import nodemailer from "nodemailer";
 import { sendResetEmail, sendVerificationEmail, sendWelcomeEmail } from "../utils/email";
 const JWT_SECRET = process.env.JWT_SECRET || "supersecretkey";
 
@@ -194,6 +195,79 @@ export const verifyEmail = async (req: Request, res: Response) => {
     });
   } catch (err: any) {
     res.status(500).json({ success: false, message: err.message });
+  }
+};
+
+export const resendVerification = async (req: Request, res: Response) => {
+  try {
+    const { email } = req.body;
+
+    if (!email) {
+      return res.status(400).json({ message: "Email is required" });
+    }
+
+    const user = await User.findOne({ email });
+    if (!user) {
+      return res.status(404).json({ message: "No account with that email" });
+    }
+
+    if (user.isVerified) {
+      return res.status(400).json({ message: "Email already verified" });
+    }
+
+    const verificationToken = crypto.randomBytes(32).toString("hex");
+    user.verificationToken = verificationToken;
+    user.verificationTokenExpires = new Date(Date.now() + 24 * 60 * 60 * 1000);
+    await user.save();
+
+    sendVerificationEmail(email, verificationToken).catch((err) =>
+      console.error("[AUTH] Background verification email failed:", err)
+    );
+
+    res.json({ success: true, message: "Verification email sent" });
+  } catch (err: any) {
+    res.status(500).json({ success: false, message: err.message });
+  }
+};
+
+export const testEmail = async (req: Request, res: Response) => {
+  try {
+    const { email } = req.body;
+
+    if (!email) {
+      return res.status(400).json({ message: "Email is required" });
+    }
+
+    console.log("[EMAIL TEST] Attempting to send test email to", email);
+    console.log("[EMAIL TEST] SMTP config:", {
+      host: process.env.SMTP_HOST,
+      port: process.env.SMTP_PORT,
+      user: process.env.SMTP_USER ? "set" : "NOT SET",
+      pass: process.env.SMTP_PASS ? "set" : "NOT SET",
+      from: process.env.SMTP_FROM,
+    });
+
+    const transporter = nodemailer.createTransport({
+      host: process.env.SMTP_HOST,
+      port: Number(process.env.SMTP_PORT) || 587,
+      auth: {
+        user: process.env.SMTP_USER,
+        pass: process.env.SMTP_PASS,
+      },
+    });
+
+    await transporter.sendMail({
+      from: `"Boxlit" <${process.env.SMTP_FROM || process.env.SMTP_USER}>`,
+      to: email,
+      subject: "Boxlit — Test Email",
+      html: "<p>If you're seeing this, email sending is working!</p>",
+    });
+
+    console.log("[EMAIL TEST] Test email sent successfully");
+    res.json({ success: true, message: "Test email sent" });
+  } catch (err: any) {
+    console.error("[EMAIL TEST] Failed:", err);
+    res.status(500).json({ success: false, message: err.message, code: err.code });
   }
 };
 

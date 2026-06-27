@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import { motion } from "framer-motion";
-import { registerUser } from "../../services/auth";
+import { registerUser, resendVerification } from "../../services/auth";
 
 export default function Signup() {
   const [loading, setLoading] = useState(false);
@@ -12,6 +12,8 @@ export default function Signup() {
   const [confirmPassword, setConfirmPassword] = useState("");
   const [error, setError] = useState<string | null>(null);
   const [submittedEmail, setSubmittedEmail] = useState<string | null>(null);
+  const [resending, setResending] = useState(false);
+  const [resentMsg, setResentMsg] = useState<string | null>(null);
 
   const handleSignup = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -34,6 +36,20 @@ export default function Signup() {
     }
   };
 
+  const handleResend = async () => {
+    if (!submittedEmail) return;
+    setResending(true);
+    setResentMsg(null);
+    try {
+      await resendVerification({ email: submittedEmail });
+      setResentMsg("Verification email resent!");
+    } catch (err: any) {
+      setResentMsg(err.response?.data?.message || "Failed to resend");
+    } finally {
+      setResending(false);
+    }
+  };
+
   if (submittedEmail) {
     return (
       <div className="min-h-screen flex justify-center items-center relative">
@@ -52,6 +68,17 @@ export default function Signup() {
             <p className="text-gray-400 text-sm mb-8">
               Click the link in the email to activate your account. Then log in to start training.
             </p>
+
+            {resentMsg && <p className="text-sm mb-4 text-amber-400">{resentMsg}</p>}
+
+            <button
+              onClick={handleResend}
+              disabled={resending}
+              className="text-sm text-gray-400 hover:text-red-400 transition mb-4 block w-full"
+            >
+              {resending ? "Sending..." : "Resend verification email"}
+            </button>
+
             <a href="/login" className="inline-block font-bold bg-gradient-to-r from-[#fd5353] to-red-600 text-white rounded-xl py-3 px-8 shadow-md transition hover:scale-105">
               Go to Login
             </a>

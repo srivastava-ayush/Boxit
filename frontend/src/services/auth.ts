@@ -42,3 +42,8 @@ export const verifyEmail = async (token: string) => {
   const res = await api.get(`/auth/verify-email/${token}`);
   return res.data;
 };
+
+export const resendVerification = async (data: { email: string }) => {
+  const res = await api.post("/auth/resend-verification", data);
+  return res.data;
+};
