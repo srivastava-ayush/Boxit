@@ -3,7 +3,7 @@ import User from "../models/user.model";
 import jwt from "jsonwebtoken";
 import mongoose from "mongoose";
 import crypto from "crypto";
-import nodemailer from "nodemailer";
+import https from "https";
 import { sendResetEmail, sendVerificationEmail, sendWelcomeEmail } from "../utils/email";
 const JWT_SECRET = process.env.JWT_SECRET || "supersecretkey";
 
@@ -238,32 +238,60 @@ export const testEmail = async (req: Request, res: Response) => {
       return res.status(400).json({ message: "Email is required" });
     }
 
-    console.log("[EMAIL TEST] Attempting to send test email to", email);
-    console.log("[EMAIL TEST] SMTP config:", {
-      host: process.env.SMTP_HOST,
-      port: process.env.SMTP_PORT,
-      user: process.env.SMTP_USER ? "set" : "NOT SET",
-      pass: process.env.SMTP_PASS ? "set" : "NOT SET",
+    console.log("[EMAIL TEST] Attempting to send test email via Brevo to", email);
+    console.log("[EMAIL TEST] Brevo config:", {
+      apiKey: process.env.BREVO_API_KEY ? "set" : "NOT SET",
       from: process.env.SMTP_FROM,
+      fromName: process.env.SMTP_FROM_NAME,
     });
 
-    const transporter = nodemailer.createTransport({
-      host: process.env.SMTP_HOST,
-      port: Number(process.env.SMTP_PORT) || 587,
-      auth: {
-        user: process.env.SMTP_USER,
-        pass: process.env.SMTP_PASS,
-      },
+    await new Promise<void>((resolve, reject) => {
+      const data = JSON.stringify({
+        sender: {
+          name: process.env.SMTP_FROM_NAME || "Boxlit",
+          email: process.env.SMTP_FROM!,
+        },
+        to: [{ email }],
+        subject: "Boxlit — Test Email",
+        htmlContent: "<p>If you're seeing this, email sending is working!</p>",
+      });
+
+      const options: https.RequestOptions = {
+        hostname: "api.brevo.com",
+        path: "/v3/smtp/email",
+        method: "POST",
+        family: 4,
+        timeout: 30000,
+        headers: {
+          "api-key": process.env.BREVO_API_KEY!,
+          "Content-Type": "application/json",
+          "Content-Length": Buffer.byteLength(data),
+        },
+      };
+
+      const req = https.request(options, (res) => {
+        let body = "";
+        res.on("data", (chunk) => (body += chunk));
+        res.on("end", () => {
+          if (res.statusCode! >= 200 && res.statusCode! < 300) {
+            resolve();
+          } else {
+            reject(new Error(`Brevo API error ${res.statusCode}: ${body}`));
+          }
+        });
+      });
+
+      req.on("error", reject);
+      req.on("timeout", () => {
+        req.destroy();
+        reject(new Error("Brevo API timeout"));
+      });
+
+      req.write(data);
+      req.end();
     });
 
-    await transporter.sendMail({
-      from: `"Boxlit" <${process.env.SMTP_FROM || process.env.SMTP_USER}>`,
-      to: email,
-      subject: "Boxlit — Test Email",
-      html: "<p>If you're seeing this, email sending is working!</p>",
-    });
-
-    console.log("[EMAIL TEST] Test email sent successfully");
+    console.log("[EMAIL TEST] Test email sent successfully via Brevo");
     res.json({ success: true, message: "Test email sent" });
   } catch (err: any) {
     console.error("[EMAIL TEST] Failed:", err);
