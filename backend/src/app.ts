@@ -10,10 +10,13 @@ connectDB();
 
 const app = express();
 
-const allowedOrigins = [
-   "http://localhost:5173",
+let allowedOrigins = [
   "https://boxlit.vercel.app",
 ];
+
+if (process.env.NODE_ENV === "development") {
+  allowedOrigins.push("http://localhost:5173");
+}   
 
 app.use(
   cors({

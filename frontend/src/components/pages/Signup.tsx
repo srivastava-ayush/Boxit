@@ -61,20 +61,24 @@ export default function Signup() {
             className="w-full max-w-xl bg-[#42424273] backdrop-blur-xl rounded-2xl shadow-xl shadow-[#ffffff06] p-8 border border-white/40 text-center"
           >
             <h2 className="text-3xl font-bold text-white mb-4">Check Your Email</h2>
-            <p className="text-gray-300 mb-2">
+           
+           <div>
+             <p className="text-gray-300 mb-2">
               We sent a verification link to
             </p>
-            <p className="text-white font-medium mb-6">{submittedEmail}</p>
-            <p className="text-gray-400 text-sm mb-8">
+            <p className="text-white font-medium mb-2">{submittedEmail}</p>
+            <p className="text-gray-300 text-sm mb-8">
               Click the link in the email to activate your account. Then log in to start training.
             </p>
+            </div>
+            <p className="text-red-300 font-black">If you don't see the email, check your spam folder.</p>
 
             {resentMsg && <p className="text-sm mb-4 text-amber-400">{resentMsg}</p>}
 
             <button
               onClick={handleResend}
               disabled={resending}
-              className="text-sm text-gray-400 hover:text-red-400 transition mb-4 block w-full"
+              className="text-sm text-gray-400 underline  hover:text-red-400 transition mb-4 block w-full"
             >
               {resending ? "Sending..." : "Resend verification email"}
             </button>
