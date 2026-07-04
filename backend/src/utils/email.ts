@@ -4,10 +4,8 @@ import dns from "dns";
 dns.setDefaultResultOrder("ipv4first");
 
 const transporter = nodemailer.createTransport({
-  host: "74.125.142.108",
-  port: Number(process.env.SMTP_PORT) || 465,
-  secure: true,
-  family: 4,
+  host: "smtp-relay.brevo.com",
+  port: Number(process.env.SMTP_PORT) || 587,
   auth: {
     user: process.env.SMTP_USER,
     pass: process.env.SMTP_PASS,
